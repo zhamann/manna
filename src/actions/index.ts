@@ -36,6 +36,11 @@ const libraryErrors: Record<
     code: "NOT_FOUND",
     message: "That recipe no longer exists.",
   },
+  "library-full": {
+    code: "CONTENT_TOO_LARGE",
+    message:
+      "Your library is too big to back up. Shorten or delete recipes to make room.",
+  },
 }
 
 /** Runs a library call, reporting its domain errors as action errors. */

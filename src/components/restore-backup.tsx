@@ -47,7 +47,10 @@ export function RestoreBackup({
       const { error } = await actions.restoreBackup(backup)
       if (!error) return window.location.assign("/")
       setBackup(undefined)
-      setError(isInputError(error) ? error.issues[0]?.message : error.message)
+      if (isInputError(error)) setError(error.issues[0]?.message)
+      else if (error.code === "CONTENT_TOO_LARGE")
+        setError("That backup is too big to restore.")
+      else setError(error.message)
     })
   }
 
