@@ -1,0 +1,109 @@
+---
+import {
+  IconClock,
+  IconExternalLink,
+  IconPencil,
+  IconToolsKitchen2,
+  IconUsers,
+} from "@tabler/icons-react"
+
+import { Badge } from "@/components/ui/badge"
+import { buttonVariants } from "@/components/ui/button"
+import { Separator } from "@/components/ui/separator"
+import AppLayout from "@/layouts/app.astro"
+import { getDatabase } from "@/server/database"
+import { getRecipe } from "@/server/library"
+import { parseId } from "@/server/params"
+
+const id = parseId(Astro.params.id)
+const recipe = id && getRecipe(getDatabase(), id)
+if (!recipe) return Astro.rewrite("/404")
+
+const facts = [
+  { icon: IconUsers, label: "Serves", value: recipe.servings },
+  { icon: IconClock, label: "Prep", value: recipe.prepTime },
+  { icon: IconClock, label: "Cook", value: recipe.cookTime },
+].filter((fact) => fact.value)
+---
+
+<AppLayout
+  title={recipe.title}
+  breadcrumb={[recipe.sectionName, recipe.title]}
+  activeRecipeId={recipe.id}
+>
+  <article class="@container mx-auto flex w-full max-w-5xl flex-col gap-8 p-4 md:p-8">
+    <header class="flex flex-col gap-4 @xl:flex-row @xl:items-start @xl:justify-between">
+      <div class="flex flex-col gap-3">
+        <h1 class="text-3xl font-semibold tracking-tight">{recipe.title}</h1>
+        {recipe.description && (
+          <p class="text-muted-foreground">{recipe.description}</p>
+        )}
+        {(facts.length > 0 || recipe.sourceUrl) && (
+          <div class="flex flex-wrap gap-2">
+            {facts.map(({ icon: Icon, label, value }) => (
+              <Badge variant="secondary">
+                <Icon />
+                {`${label} ${value}`}
+              </Badge>
+            ))}
+            {recipe.sourceUrl && (
+              <a
+                href={recipe.sourceUrl}
+                target="_blank"
+                rel="noreferrer noopener"
+                class={buttonVariants({ variant: "link", size: "xs" })}
+              >
+                Source
+                <IconExternalLink />
+              </a>
+            )}
+          </div>
+        )}
+      </div>
+      <div class="flex gap-2">
+        <a
+          href={`/recipes/${recipe.id}/edit`}
+          class={buttonVariants({ variant: "outline" })}
+        >
+          <IconPencil />
+          Edit
+        </a>
+      </div>
+    </header>
+    <div class="grid gap-8 @2xl:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]">
+      <section class="flex flex-col gap-3">
+        <h2 class="text-xl font-semibold tracking-tight">Ingredients</h2>
+        {recipe.ingredients.length > 0 ? (
+          <ul class="ml-6 list-disc [&>li]:mt-2">
+            {recipe.ingredients.map((ingredient) => (
+              <li>{ingredient}</li>
+            ))}
+          </ul>
+        ) : (
+          <p class="text-muted-foreground">No ingredients yet.</p>
+        )}
+      </section>
+      <section class="flex flex-col gap-3">
+        <h2 class="text-xl font-semibold tracking-tight">Steps</h2>
+        {recipe.steps.length > 0 ? (
+          <ol class="ml-6 list-decimal [&>li]:mt-3 [&>li]:pl-1">
+            {recipe.steps.map((step) => (
+              <li class="whitespace-pre-line">{step}</li>
+            ))}
+          </ol>
+        ) : (
+          <p class="text-muted-foreground">No steps yet.</p>
+        )}
+      </section>
+    </div>
+    {recipe.notes && (
+      <>
+        <Separator />
+        <section class="flex flex-col gap-3">
+          <h2 class="text-xl font-semibold tracking-tight">Notes</h2>
+          <p class="whitespace-pre-line">{recipe.notes}</p>
+        </section>
+      </>
+    )}
+  </article>
+</AppLayout>
