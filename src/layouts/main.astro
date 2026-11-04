@@ -3,25 +3,27 @@ import "@/styles/global.css"
 
 interface Props {
   title?: string
+  /** Always use the dark theme instead of following the device. */
+  dark?: boolean
 }
 
-const { title } = Astro.props
+const { title, dark = false } = Astro.props
 ---
 
-<html lang="en">
+<html lang="en" class:list={{ dark }}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <title>{title ? `${title} · Recipes` : "Recipes"}</title>
-    <script is:inline>
+    {!dark && <script is:inline>
       // Follow the device's light/dark setting.
       const dark = matchMedia("(prefers-color-scheme: dark)")
       const applyTheme = () =>
         document.documentElement.classList.toggle("dark", dark.matches)
       applyTheme()
       dark.addEventListener("change", applyTheme)
-    </script>
+    </script>}
   </head>
   <body>
     <slot />
