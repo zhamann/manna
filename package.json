@@ -15,7 +15,8 @@
     "lint": "eslint .",
     "format": "prettier --write \"**/*.{ts,tsx,astro}\"",
     "format:check": "prettier --check \"**/*.{ts,tsx,astro}\"",
-    "typecheck": "astro check"
+    "typecheck": "astro check",
+    "test": "vitest run"
   },
   "dependencies": {
     "@astrojs/node": "^11.1.9",
@@ -38,6 +39,7 @@
   "devDependencies": {
     "@astrojs/check": "^0.9",
     "@eslint/js": "^10",
+    "@types/node": "^26.6.6",
     "eslint": "^10",
     "eslint-plugin-react-hooks": "^7.1.1",
     "eslint-plugin-react-refresh": "^0.5.7",
@@ -46,7 +48,8 @@
     "prettier-plugin-astro": "^1.1.2",
     "prettier-plugin-tailwindcss": "^0.8.1",
     "typescript": "~6.0.2",
-    "typescript-eslint": "^8"
+    "typescript-eslint": "^8",
+    "vitest": "^5.1.0"
   },
   "license": "AGPL-3.0-only",
   "packageManager": "pnpm@12.16.1"

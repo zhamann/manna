@@ -12,7 +12,7 @@ A simple, fast, self-hosted recipe app. Recipes live in sections shown in a side
 
 - `pnpm dev`: start the dev server.
 - `pnpm build` / `pnpm start`: build and run the production server.
-- `pnpm lint`, `pnpm format:check`, `pnpm typecheck`: the checks CI runs.
+- `pnpm lint`, `pnpm format:check`, `pnpm typecheck`, `pnpm test`: the checks CI runs.
 
 ## UI conventions
 
@@ -22,6 +22,13 @@ A simple, fast, self-hosted recipe app. Recipes live in sections shown in a side
 - Theme changes belong in `src/styles/global.css` as tokens.
 - Every screen must work at phone, tablet, and desktop widths.
 
+## Data
+
+- SQLite through Node's built-in `node:sqlite`, stored at `$DATA_DIR/recipes.db` (default `./data`).
+- `src/server/library.ts` owns all reads and writes; the schema enforces the rules (unique section names, only empty sections can be deleted) and the library translates violations into `LibraryError` codes.
+- Schema changes are new numbered files in `src/server/migrations/`, applied in order at startup. Never edit a shipped migration.
+- Tests use Vitest against an in-memory database (`openDatabase(":memory:")`). Don't add Playwright.
+
 ## Git and pull requests
 
 - All changes land through pull requests; never push to `main`.
@@ -29,4 +36,3 @@ A simple, fast, self-hosted recipe app. Recipes live in sections shown in a side
 - PR titles and commit messages follow Conventional Commits (`feat:`, `fix:`, `chore:`, `build:`, `docs:`, `test:`, `refactor:`).
 - PRs are squash-merged once CI passes.
 - Each PR carries its own tests and README updates.
-- Don't add Playwright.
