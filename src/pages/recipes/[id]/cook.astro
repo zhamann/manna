@@ -1,0 +1,20 @@
+---
+import { CookMode } from "@/components/cook-mode"
+import Layout from "@/layouts/main.astro"
+import { getDatabase } from "@/server/database"
+import { getRecipe } from "@/server/library"
+import { parseId } from "@/server/params"
+
+const id = parseId(Astro.params.id)
+const recipe = id && getRecipe(getDatabase(), id)
+if (!recipe) return Astro.rewrite("/404")
+
+const { title, ingredients, steps } = recipe
+---
+
+<Layout title={title} dark>
+  <CookMode
+    client:only="react"
+    recipe={{ id: recipe.id, title, ingredients, steps }}
+  />
+</Layout>

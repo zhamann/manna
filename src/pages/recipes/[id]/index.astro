@@ -3,6 +3,7 @@ import {
   IconClock,
   IconExternalLink,
   IconPencil,
+  IconToolsKitchen2,
   IconUsers,
 } from "@tabler/icons-react"
 
@@ -60,6 +61,12 @@ const facts = [
         )}
       </div>
       <div class="flex gap-2">
+        {recipe.steps.length > 0 && (
+          <a href={`/recipes/${recipe.id}/cook`} class={buttonVariants()}>
+            <IconToolsKitchen2 />
+            Cook
+          </a>
+        )}
         <a
           href={`/recipes/${recipe.id}/edit`}
           class={buttonVariants({ variant: "outline" })}
