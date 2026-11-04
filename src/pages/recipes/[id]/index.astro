@@ -36,9 +36,11 @@ const facts = [
   <article class="@container mx-auto flex w-full max-w-5xl flex-col gap-8 p-4 md:p-8">
     <header class="flex flex-col gap-4 @xl:flex-row @xl:items-start @xl:justify-between">
       <div class="flex flex-col gap-3">
-        <h1 class="text-3xl font-semibold tracking-tight">{recipe.title}</h1>
+        <h1 class="font-heading text-4xl leading-tight md:text-5xl">
+          {recipe.title}
+        </h1>
         {recipe.description && (
-          <p class="text-muted-foreground">{recipe.description}</p>
+          <p class="text-lg text-muted-foreground">{recipe.description}</p>
         )}
         {(facts.length > 0 || recipe.sourceUrl) && (
           <div class="flex flex-wrap gap-2">
@@ -71,7 +73,7 @@ const facts = [
         )}
         <a
           href={`/recipes/${recipe.id}/edit`}
-          class={cn(buttonVariants({ variant: "outline" }))}
+          class={cn(buttonVariants({ variant: "secondary" }))}
         >
           <IconPencil />
           Edit
@@ -80,9 +82,9 @@ const facts = [
     </header>
     <div class="grid gap-8 @2xl:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]">
       <section class="flex flex-col gap-3">
-        <h2 class="text-xl font-semibold tracking-tight">Ingredients</h2>
+        <h2 class="font-heading text-2xl">Ingredients</h2>
         {recipe.ingredients.length > 0 ? (
-          <ul class="ml-6 list-disc [&>li]:mt-2">
+          <ul class="ml-6 list-disc marker:text-primary [&>li]:mt-2">
             {recipe.ingredients.map((ingredient) => (
               <li>{ingredient}</li>
             ))}
@@ -92,9 +94,9 @@ const facts = [
         )}
       </section>
       <section class="flex flex-col gap-3">
-        <h2 class="text-xl font-semibold tracking-tight">Steps</h2>
+        <h2 class="font-heading text-2xl">Steps</h2>
         {recipe.steps.length > 0 ? (
-          <ol class="ml-6 list-decimal [&>li]:mt-3 [&>li]:pl-1">
+          <ol class="ml-6 list-decimal marker:text-primary [&>li]:mt-3 [&>li]:pl-1">
             {recipe.steps.map((step) => (
               <li class="whitespace-pre-line">{step}</li>
             ))}
@@ -108,7 +110,7 @@ const facts = [
       <>
         <Separator />
         <section class="flex flex-col gap-3">
-          <h2 class="text-xl font-semibold tracking-tight">Notes</h2>
+          <h2 class="font-heading text-2xl">Notes</h2>
           <p class="whitespace-pre-line">{recipe.notes}</p>
         </section>
       </>

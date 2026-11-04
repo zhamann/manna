@@ -1,6 +1,5 @@
 ---
-import { IconChefHat } from "@tabler/icons-react"
-
+import { MannaMark } from "@/components/manna-mark"
 import { NewSectionButton } from "@/components/section-dialog"
 import {
   Empty,
@@ -21,7 +20,7 @@ const hasSections = listSections(getDatabase()).length > 0
   <Empty className="flex-1">
     <EmptyHeader>
       <EmptyMedia variant="icon">
-        <IconChefHat />
+        <MannaMark />
       </EmptyMedia>
       {hasSections ? (
         <>

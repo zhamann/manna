@@ -1,5 +1,13 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-  <style>path { stroke: #1d1f17; } @media (prefers-color-scheme: dark) { path { stroke: #f8f8f5; } }</style>
-  <path d="M12 3c1.918 0 3.52 1.35 3.91 3.151a4 4 0 0 1 2.09 7.723l0 7.126h-12v-7.126a4 4 0 1 1 2.092 -7.723a4 4 0 0 1 3.908 -3.151" />
-  <path d="M6.161 17.009l11.839 -.009" />
+  <style>
+    path { stroke: #5b6b2c; } circle { fill: #5b6b2c; }
+    @media (prefers-color-scheme: dark) { path { stroke: #d9c86f; } circle { fill: #d9c86f; } }
+  </style>
+  <path d="M3 11h18" />
+  <path d="M5 11c0 4 3 7 7 7s7-3 7-7" />
+  <path d="M8.5 21h7" />
+  <path d="M12 18v3" />
+  <path d="M7 11c1.4-1.9 3-2.8 5-2.8s3.6.9 5 2.8" />
+  <circle cx="10" cy="3.2" r="1.05" />
+  <circle cx="14" cy="5.4" r="1.05" />
 </svg>
