@@ -1,0 +1,34 @@
+---
+import { AppShell } from "@/components/app-shell"
+import Layout from "@/layouts/main.astro"
+import {
+  COLLAPSED_SECTIONS_COOKIE,
+  parseCollapsedSections,
+} from "@/lib/collapsed-sections"
+import { getDatabase } from "@/server/database"
+import { listSections } from "@/server/library"
+
+interface Props {
+  title?: string
+  breadcrumb: string[]
+  activeRecipeId?: number
+}
+
+const { title, breadcrumb, activeRecipeId } = Astro.props
+const { cookies } = Astro
+---
+
+<Layout title={title}>
+  <AppShell
+    client:load
+    sections={listSections(getDatabase())}
+    activeRecipeId={activeRecipeId}
+    collapsedSectionIds={parseCollapsedSections(
+      cookies.get(COLLAPSED_SECTIONS_COOKIE)?.value
+    )}
+    sidebarOpen={cookies.get("sidebar_state")?.value !== "false"}
+    breadcrumb={breadcrumb}
+  >
+    <slot />
+  </AppShell>
+</Layout>

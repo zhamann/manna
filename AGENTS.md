@@ -17,9 +17,10 @@ A simple, fast, self-hosted recipe app. Recipes live in sections shown in a side
 ## UI conventions
 
 - Build UI from shadcn components. Add them with `pnpm dlx shadcn@latest add <name>`.
-- Never edit files in `src/components/ui/`; they must stay updatable through the CLI.
+- Never edit files in `src/components/ui/` or `src/hooks/use-mobile.ts`; they must stay updatable through the CLI, so lint and Prettier skip them.
 - App components compose shadcn components. Their own classes are limited to layout, spacing, and text size; no hand-built controls, menus, dialogs, or one-off colors.
 - Theme changes belong in `src/styles/global.css` as tokens.
+- Mutations are Astro Actions in `src/actions/`; they validate input with `astro/zod` and map `LibraryError` codes to user-facing messages. After a successful mutation the client reloads or navigates, so pages always render from the database.
 - Every screen must work at phone, tablet, and desktop widths.
 
 ## Data
