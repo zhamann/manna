@@ -54,6 +54,6 @@ let shared: DatabaseSync | undefined
 
 /** The app's database, stored in `DATA_DIR` (default `./data`). */
 export function getDatabase(): DatabaseSync {
-  shared ??= openDatabase(join(process.env.DATA_DIR ?? "data", "recipes.db"))
+  shared ??= openDatabase(join(process.env.DATA_DIR ?? "data", "manna.db"))
   return shared
 }

@@ -1,6 +1,6 @@
-# Recipes
+# Manna
 
-A simple, fast, self-hosted recipe app. Organize recipes into sections, then follow them step by step in cook mode on your phone, tablet, or desktop.
+Manna is a simple, fast, self-hosted recipe app. Organize recipes into sections, then follow them step by step in cook mode on your phone, tablet, or desktop.
 
 ## Features
 
@@ -14,11 +14,11 @@ A simple, fast, self-hosted recipe app. Organize recipes into sections, then fol
 Run the published image with Docker Compose:
 
 ```bash
-curl -O https://raw.githubusercontent.com/zhamann/recipes/main/docker-compose.yml
+curl -O https://raw.githubusercontent.com/zhamann/manna/main/docker-compose.yml
 docker compose up -d
 ```
 
-Open http://localhost:4321. Recipes are stored in the `recipes-data` volume; export a backup from Settings before moving or wiping it. Images are built for `linux/amd64` and `linux/arm64`.
+Open http://localhost:4321. Recipes are stored in the `manna-data` volume; export a backup from Settings before moving or wiping it. Images are built for `linux/amd64` and `linux/arm64`.
 
 The app has no accounts, so keep it on a private network or behind a reverse proxy that handles authentication. Serve it over HTTPS if you want cook mode to keep the screen awake.
 
@@ -50,7 +50,7 @@ pnpm start
 
 ## Releasing
 
-Push a tag like `v1.2.3` to publish `ghcr.io/zhamann/recipes` as `1.2.3`, `1.2`, and `latest`.
+Push a tag like `v1.2.3` to publish `ghcr.io/zhamann/manna` as `1.2.3`, `1.2`, and `latest`.
 
 ## License
 
