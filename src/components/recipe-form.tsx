@@ -34,7 +34,7 @@ export function RecipeForm({
   const [errors, setErrors] = useState<Errors>({})
   const [pending, startTransition] = useTransition()
 
-  function submit(event: React.FormEvent<HTMLFormElement>) {
+  function submit(event: React.SubmitEvent<HTMLFormElement>) {
     event.preventDefault()
     const form = new FormData(event.currentTarget)
     const field = (name: string) => String(form.get(name) ?? "")
