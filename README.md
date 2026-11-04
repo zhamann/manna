@@ -18,9 +18,32 @@ curl -O https://raw.githubusercontent.com/zhamann/manna/main/docker-compose.yml
 docker compose up -d
 ```
 
-Open http://localhost:4321. Recipes are stored in the `manna-data` volume; export a backup from Settings before moving or wiping it. Images are built for `linux/amd64` and `linux/arm64`.
+Open http://localhost:4321. Images are built for `linux/amd64` and `linux/arm64`.
 
 The app has no accounts, so keep it on a private network or behind a reverse proxy that handles authentication. Serve it over HTTPS if you want cook mode to keep the screen awake.
+
+To use another port, change the host side of the mapping in `docker-compose.yml`, e.g. `"8080:4321"` serves the app on port 8080. To reach the app only through a reverse proxy on the same machine, bind it to loopback with `"127.0.0.1:4321:4321"`.
+
+### Data and backups
+
+The database lives in `/data` inside the container, which Compose mounts from the `manna-data` volume, so it survives restarts, upgrades, and recreating the container.
+
+Export a backup from **Settings → Export**, or fetch one from a script:
+
+```bash
+curl -o manna-backup.json http://localhost:4321/backup.json
+```
+
+To restore, open **Settings → Restore** and pick a backup file. Restoring replaces every section and recipe with the backup's and can't be undone, so export first if you might want the current library back.
+
+### Upgrading
+
+```bash
+docker compose pull
+docker compose up -d
+```
+
+The new container uses the same volume and applies any database migrations when it starts. Export a backup before upgrading: migrations only move forward, so going back to an older version means starting it with an empty volume and restoring that backup.
 
 ## Development
 
