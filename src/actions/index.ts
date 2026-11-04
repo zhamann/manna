@@ -62,10 +62,14 @@ const sectionName = z
   .min(1, "Enter a name.")
   .max(100, "Keep it under 100 characters.")
 
-const text = (max: number) => z.string().trim().max(max)
+const text = (max: number) =>
+  z
+    .string()
+    .trim()
+    .max(max, `Keep it under ${max.toLocaleString("en-US")} characters.`)
 const lines = z
   .array(text(2000))
-  .max(200)
+  .max(200, "Keep the list under 200 entries.")
   .transform((lines) => lines.filter(Boolean))
 
 const recipe = z.object({

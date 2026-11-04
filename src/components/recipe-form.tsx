@@ -87,11 +87,12 @@ export function RecipeForm({
           />
           <FieldError>{error("title")}</FieldError>
         </Field>
-        <Field>
+        <Field data-invalid={invalid("sectionId")}>
           <FieldLabel htmlFor="sectionId">Section</FieldLabel>
           <NativeSelect
             id="sectionId"
             name="sectionId"
+            aria-invalid={invalid("sectionId")}
             defaultValue={recipe?.sectionId ?? sectionId}
             className="w-full"
           >
@@ -101,43 +102,52 @@ export function RecipeForm({
               </NativeSelectOption>
             ))}
           </NativeSelect>
+          <FieldError>{error("sectionId")}</FieldError>
         </Field>
-        <Field>
+        <Field data-invalid={invalid("description")}>
           <FieldLabel htmlFor="description">Description</FieldLabel>
           <Textarea
             id="description"
             name="description"
+            aria-invalid={invalid("description")}
             defaultValue={recipe?.description}
             placeholder="A sentence or two about the dish."
           />
+          <FieldError>{error("description")}</FieldError>
         </Field>
         <div className="grid gap-7 sm:grid-cols-3 sm:gap-4">
-          <Field>
+          <Field data-invalid={invalid("servings")}>
             <FieldLabel htmlFor="servings">Servings</FieldLabel>
             <Input
               id="servings"
               name="servings"
+              aria-invalid={invalid("servings")}
               defaultValue={recipe?.servings}
               placeholder="1 loaf"
             />
+            <FieldError>{error("servings")}</FieldError>
           </Field>
-          <Field>
+          <Field data-invalid={invalid("prepTime")}>
             <FieldLabel htmlFor="prepTime">Prep time</FieldLabel>
             <Input
               id="prepTime"
               name="prepTime"
+              aria-invalid={invalid("prepTime")}
               defaultValue={recipe?.prepTime}
               placeholder="15 min"
             />
+            <FieldError>{error("prepTime")}</FieldError>
           </Field>
-          <Field>
+          <Field data-invalid={invalid("cookTime")}>
             <FieldLabel htmlFor="cookTime">Cook time</FieldLabel>
             <Input
               id="cookTime"
               name="cookTime"
+              aria-invalid={invalid("cookTime")}
               defaultValue={recipe?.cookTime}
               placeholder="1 hr"
             />
+            <FieldError>{error("cookTime")}</FieldError>
           </Field>
         </div>
         <Field data-invalid={invalid("sourceUrl")}>
@@ -170,14 +180,16 @@ export function RecipeForm({
           error={error("steps")}
           multiline
         />
-        <Field>
+        <Field data-invalid={invalid("notes")}>
           <FieldLabel htmlFor="notes">Notes</FieldLabel>
           <Textarea
             id="notes"
             name="notes"
+            aria-invalid={invalid("notes")}
             defaultValue={recipe?.notes}
             placeholder="Substitutions, storage, what to try next time."
           />
+          <FieldError>{error("notes")}</FieldError>
         </Field>
         <FieldError>{error("form")}</FieldError>
         <div className="flex flex-col-reverse gap-2 sm:flex-row sm:items-center">
