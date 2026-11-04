@@ -1,13 +1,13 @@
 services:
   recipes:
-    image: ghcr.io/zhamann/recipes:latest
+    image: ghcr.io/zhamann/manna:latest
     # To build from source instead: comment out `image` and uncomment `build`.
     # build: .
     ports:
       - "4321:4321"
     volumes:
-      - recipes-data:/data
+      - manna-data:/data
     restart: unless-stopped
 
 volumes:
-  recipes-data:
+  manna-data:

@@ -76,7 +76,7 @@ export function AppSidebar({
                 <IconChefHat className="size-4" />
               </div>
               <div className="flex flex-col gap-0.5 leading-none">
-                <span className="font-medium">Recipes</span>
+                <span className="font-medium">Manna</span>
                 <span>
                   {recipeCount} {recipeCount === 1 ? "recipe" : "recipes"}
                 </span>

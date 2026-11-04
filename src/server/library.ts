@@ -217,7 +217,7 @@ export function deleteRecipe(db: DatabaseSync, id: number) {
   if (changes === 0) throw new LibraryError("recipe-not-found")
 }
 
-export const BACKUP_FORMAT = "recipes-backup"
+export const BACKUP_FORMAT = "manna-backup"
 export const BACKUP_VERSION = 1
 
 /** The whole library as a portable file, ids included. */

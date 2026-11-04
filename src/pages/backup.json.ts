@@ -8,7 +8,7 @@ export const GET: APIRoute = () => {
   return new Response(JSON.stringify(exportLibrary(getDatabase()), null, 2), {
     headers: {
       "Content-Type": "application/json",
-      "Content-Disposition": `attachment; filename="recipes-backup-${date}.json"`,
+      "Content-Disposition": `attachment; filename="manna-backup-${date}.json"`,
     },
   })
 }
