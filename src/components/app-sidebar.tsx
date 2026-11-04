@@ -1,5 +1,4 @@
 import {
-  IconChefHat,
   IconFolderPlus,
   IconMinus,
   IconPlus,
@@ -7,6 +6,7 @@ import {
 } from "@tabler/icons-react"
 import * as React from "react"
 
+import { MannaMark } from "@/components/manna-mark"
 import { SearchForm } from "@/components/search-form"
 import { SectionActions } from "@/components/section-actions"
 import { SectionDialog } from "@/components/section-dialog"
@@ -73,11 +73,11 @@ export function AppSidebar({
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" render={<a href="/" />}>
               <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
-                <IconChefHat className="size-4" />
+                <MannaMark className="size-5" />
               </div>
               <div className="flex flex-col gap-0.5 leading-none">
-                <span className="font-medium">Manna</span>
-                <span>
+                <span className="font-heading text-lg">Manna</span>
+                <span className="text-xs text-muted-foreground">
                   {recipeCount} {recipeCount === 1 ? "recipe" : "recipes"}
                 </span>
               </div>

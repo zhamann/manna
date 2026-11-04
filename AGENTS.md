@@ -21,6 +21,9 @@ Manna is a simple, fast, self-hosted recipe app. Recipes live in sections shown 
 - App components compose shadcn components. Their own classes are limited to layout, spacing, and text size; no hand-built controls, menus, dialogs, or one-off colors.
 - To style a link as a button, use `cn(buttonVariants({ ... }))`. `buttonVariants` alone doesn't resolve conflicting classes, so variants like `outline` lose their border.
 - Theme changes belong in `src/styles/global.css` as tokens.
+- The look is an olive grove: olive-leaf primary in light mode, olive-oil gold on a dark olive background in dark mode and cook mode. Use theme tokens (`primary`, `muted-foreground`, …), never raw colors.
+- Display text (recipe titles, page and section headings, the wordmark, cook-mode steps) uses `font-heading` (Cardo); everything else uses the default sans.
+- The logo is `src/components/manna-mark.tsx` and is mirrored in `public/favicon.svg`; keep the two in sync.
 - Mutations are Astro Actions in `src/actions/`; they validate input with `astro/zod` and map `LibraryError` codes to user-facing messages. After a successful mutation the client reloads or navigates, so pages always render from the database.
 - Every screen must work at phone, tablet, and desktop widths.
 

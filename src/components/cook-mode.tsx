@@ -103,7 +103,7 @@ export function CookMode({ recipe }: { recipe: CookRecipe }) {
 
   const recipeHref = `/recipes/${recipe.id}`
   const ingredientList = (
-    <ul className="ml-6 list-disc [&>li]:mt-2">
+    <ul className="ml-6 list-disc marker:text-primary [&>li]:mt-2">
       {ingredients.map((ingredient, index) => (
         <li key={index}>{ingredient}</li>
       ))}
@@ -121,7 +121,7 @@ export function CookMode({ recipe }: { recipe: CookRecipe }) {
           <IconX />
         </a>
         <div className="flex min-w-0 flex-1 flex-col">
-          <h1 className="truncate font-semibold">{recipe.title}</h1>
+          <h1 className="truncate font-heading text-lg">{recipe.title}</h1>
           <p className="text-sm text-muted-foreground">
             {steps.length === 0
               ? "No steps"
@@ -155,7 +155,7 @@ export function CookMode({ recipe }: { recipe: CookRecipe }) {
       <div className="flex min-h-0 flex-1">
         {ingredients.length > 0 && (
           <aside className="hidden w-80 shrink-0 overflow-y-auto border-r p-6 lg:block">
-            <h2 className="mb-3 text-lg font-semibold">Ingredients</h2>
+            <h2 className="mb-3 font-heading text-xl">Ingredients</h2>
             {ingredientList}
           </aside>
         )}
@@ -215,12 +215,16 @@ export function CookMode({ recipe }: { recipe: CookRecipe }) {
                         />
                       }
                       className={cn(
-                        "text-left text-2xl leading-snug font-semibold transition-opacity md:text-3xl",
+                        "text-left font-heading text-3xl leading-snug transition-opacity md:text-4xl",
                         index < current && "opacity-30",
                         index > current && "opacity-60"
                       )}
                     >
-                      <ItemContent className="whitespace-pre-line">
+                      <ItemContent className="block whitespace-pre-line">
+                        {/* Steps read like verses: a small number, then the text. */}
+                        <span className="mr-3 align-super font-sans text-sm font-medium text-primary tabular-nums">
+                          {index + 1}
+                        </span>
                         {step}
                       </ItemContent>
                     </Item>

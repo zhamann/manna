@@ -203,6 +203,9 @@ importers:
       '@fontsource-variable/noto-sans':
         specifier: ^5.3.0
         version: 5.3.0
+      '@fontsource/cardo':
+        specifier: ^5.3.0
+        version: 5.3.0
       '@tailwindcss/vite':
         specifier: ^4
         version: 4.3.3(vite@8.3.5(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.1))
@@ -890,6 +893,9 @@ packages:
 
   '@fontsource-variable/noto-sans@5.3.0':
     resolution: {integrity: sha512-e3ZuxzY9AL2psXPZlhwhnYrHUHv6PMoyK9MQ7croF0CUgURLqu9EMjW7q2FgVLwij1tjLsIHQrnwQ8aUcg4BiA==}
+
+  '@fontsource/cardo@5.3.0':
+    resolution: {integrity: sha512-4G7oLxQRcYyOIoJH0CpZ1Tkc5iLHQPaJoThmp/f8Vz7NFFfn5fspCWkrqhlO6mVAXFruMoOwivyXrvaISJm7uA==}
 
   '@humanfs/core@0.19.2':
     resolution: {integrity: sha512-UhXNm+CFMWcbChXywFwkmhqjs3PRCmcSa/hfBgLIb7oQ5HNb1wS0icWsGtSAUNgefHeI+eBrA8I1fxmbHsGdvA==}
@@ -4366,6 +4372,8 @@ snapshots:
   '@floating-ui/utils@0.2.12': {}
 
   '@fontsource-variable/noto-sans@5.3.0': {}
+
+  '@fontsource/cardo@5.3.0': {}
 
   '@humanfs/core@0.19.2':
     dependencies:
