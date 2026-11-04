@@ -3,12 +3,15 @@ import { z } from "astro/zod"
 
 import { getDatabase } from "@/server/database"
 import {
+  BACKUP_FORMAT,
+  BACKUP_VERSION,
   createRecipe,
   createSection,
   deleteRecipe,
   deleteSection,
   LibraryError,
   renameSection,
+  restoreLibrary,
   updateRecipe,
   type LibraryErrorCode,
 } from "@/server/library"
@@ -79,6 +82,25 @@ const recipe = z.object({
   notes: text(5000),
 })
 
+const unique = (ids: number[]) => new Set(ids).size === ids.length
+
+const backup = z
+  .object({
+    format: z.literal(BACKUP_FORMAT, "This file isn't a recipes backup."),
+    version: z.literal(
+      BACKUP_VERSION,
+      "This backup is from a newer version of the app."
+    ),
+    sections: z.array(z.object({ id, name: sectionName })),
+    recipes: z.array(recipe.extend({ id })),
+  })
+  .refine(
+    ({ sections, recipes }) =>
+      unique(sections.map(({ id }) => id)) &&
+      unique(recipes.map(({ id }) => id)),
+    "The backup lists the same section or recipe twice."
+  )
+
 export const server = {
   createSection: defineAction({
     input: z.object({ name: sectionName }),
@@ -103,5 +125,9 @@ export const server = {
   deleteRecipe: defineAction({
     input: z.object({ id }),
     handler: ({ id }) => library((db) => deleteRecipe(db, id)),
+  }),
+  restoreBackup: defineAction({
+    input: backup,
+    handler: (input) => library((db) => restoreLibrary(db, input)),
   }),
 }

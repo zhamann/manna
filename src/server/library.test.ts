@@ -7,10 +7,12 @@ import {
   createSection,
   deleteRecipe,
   deleteSection,
+  exportLibrary,
   getRecipe,
   LibraryError,
   listSections,
   renameSection,
+  restoreLibrary,
   updateRecipe,
   type RecipeInput,
 } from "./library"
@@ -164,5 +166,67 @@ describe("recipes", () => {
     expect(
       errorCode(() => updateRecipe(db, 99, recipe(section.id, "Scones")))
     ).toBe("recipe-not-found")
+  })
+})
+
+describe("backups", () => {
+  function seed() {
+    const baking = createSection(db, "Baking")
+    createSection(db, "Empty")
+    const scones = createRecipe(db, recipe(baking.id, "Scones"))
+    createRecipe(db, recipe(baking.id, "Bread"))
+    deleteRecipe(db, scones)
+  }
+
+  it("restores an export into another database with the same ids", () => {
+    seed()
+    const backup = exportLibrary(db)
+    const other = openDatabase(":memory:")
+    restoreLibrary(other, backup)
+
+    expect(exportLibrary(other)).toEqual(backup)
+    expect(backup.recipes.map(({ id }) => id)).toEqual([2])
+  })
+
+  it("replaces everything that was there", () => {
+    seed()
+    const backup = exportLibrary(db)
+    const other = openDatabase(":memory:")
+    const old = createSection(other, "Old")
+    createRecipe(other, recipe(old.id, "Old recipe"))
+    restoreLibrary(other, backup)
+
+    expect(listSections(other).map(({ name }) => name)).toEqual([
+      "Baking",
+      "Empty",
+    ])
+  })
+
+  it("leaves the library untouched when the backup is rejected", () => {
+    seed()
+    const before = exportLibrary(db)
+    const broken = {
+      ...before,
+      recipes: [{ ...before.recipes[0], sectionId: 99 }],
+    }
+
+    expect(errorCode(() => restoreLibrary(db, broken))).toBe(
+      "section-not-found"
+    )
+    expect(exportLibrary(db)).toEqual(before)
+  })
+
+  it("rejects sections whose names collide", () => {
+    const backup = {
+      ...exportLibrary(db),
+      sections: [
+        { id: 1, name: "Baking" },
+        { id: 2, name: "baking" },
+      ],
+    }
+
+    expect(errorCode(() => restoreLibrary(db, backup))).toBe(
+      "duplicate-section"
+    )
   })
 })
