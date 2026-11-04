@@ -1,0 +1,61 @@
+---
+import { IconDownload } from "@tabler/icons-react"
+
+import { RestoreBackup } from "@/components/restore-backup"
+import { buttonVariants } from "@/components/ui/button"
+import {
+  Item,
+  ItemActions,
+  ItemContent,
+  ItemDescription,
+  ItemGroup,
+  ItemTitle,
+} from "@/components/ui/item"
+import AppLayout from "@/layouts/app.astro"
+import { getDatabase } from "@/server/database"
+import { listSections } from "@/server/library"
+
+const sections = listSections(getDatabase())
+const recipeCount = sections.reduce((n, s) => n + s.recipes.length, 0)
+---
+
+<AppLayout title="Settings" breadcrumb={["Settings"]}>
+  <div class="mx-auto flex w-full max-w-2xl flex-col gap-6 p-4 md:p-8">
+    <h1 class="text-3xl font-semibold tracking-tight">Settings</h1>
+    <ItemGroup>
+      <Item variant="outline">
+        <ItemContent>
+          <ItemTitle>Export a backup</ItemTitle>
+          <ItemDescription>
+            Download every section and recipe as a JSON file.
+          </ItemDescription>
+        </ItemContent>
+        <ItemActions>
+          <a
+            href="/backup.json"
+            download
+            class={buttonVariants({ variant: "outline" })}
+          >
+            <IconDownload />
+            Export
+          </a>
+        </ItemActions>
+      </Item>
+      <Item variant="outline">
+        <ItemContent>
+          <ItemTitle>Restore a backup</ItemTitle>
+          <ItemDescription>
+            Replace everything with the contents of a backup file.
+          </ItemDescription>
+        </ItemContent>
+        <ItemActions className="flex-col items-end">
+          <RestoreBackup
+            client:load
+            sectionCount={sections.length}
+            recipeCount={recipeCount}
+          />
+        </ItemActions>
+      </Item>
+    </ItemGroup>
+  </div>
+</AppLayout>

@@ -1,5 +1,7 @@
 import type { DatabaseSync } from "node:sqlite"
 
+import { transaction } from "./database"
+
 export interface Section {
   id: number
   name: string
@@ -22,8 +24,11 @@ export interface RecipeInput {
   notes: string
 }
 
-export interface Recipe extends RecipeInput {
+export interface StoredRecipe extends RecipeInput {
   id: number
+}
+
+export interface Recipe extends StoredRecipe {
   sectionName: string
 }
 
@@ -45,16 +50,12 @@ const SQLITE_CONSTRAINT_UNIQUE = 2067
 // What SQLite reports when `ON DELETE RESTRICT` blocks a delete.
 const SQLITE_CONSTRAINT_TRIGGER = 1811
 
-function violates(error: unknown, errcode: number) {
-  return (error as { errcode?: number }).errcode === errcode
-}
-
 function translate(
   error: unknown,
-  errcode: number,
-  code: LibraryErrorCode
+  codes: Partial<Record<number, LibraryErrorCode>>
 ): never {
-  throw violates(error, errcode) ? new LibraryError(code) : error
+  const code = codes[(error as { errcode?: number }).errcode ?? -1]
+  throw code ? new LibraryError(code) : error
 }
 
 /** All sections with their recipes, both sorted by name. */
@@ -83,7 +84,7 @@ export function createSection(db: DatabaseSync, name: string): Section {
       .run(name)
     return { id: Number(lastInsertRowid), name }
   } catch (error) {
-    translate(error, SQLITE_CONSTRAINT_UNIQUE, "duplicate-section")
+    translate(error, { [SQLITE_CONSTRAINT_UNIQUE]: "duplicate-section" })
   }
 }
 
@@ -94,7 +95,7 @@ export function renameSection(db: DatabaseSync, id: number, name: string) {
       .run(name, id)
     if (changes === 0) throw new LibraryError("section-not-found")
   } catch (error) {
-    translate(error, SQLITE_CONSTRAINT_UNIQUE, "duplicate-section")
+    translate(error, { [SQLITE_CONSTRAINT_UNIQUE]: "duplicate-section" })
   }
 }
 
@@ -104,14 +105,13 @@ export function deleteSection(db: DatabaseSync, id: number) {
     const { changes } = db.prepare("DELETE FROM sections WHERE id = ?").run(id)
     if (changes === 0) throw new LibraryError("section-not-found")
   } catch (error) {
-    translate(error, SQLITE_CONSTRAINT_TRIGGER, "section-not-empty")
+    translate(error, { [SQLITE_CONSTRAINT_TRIGGER]: "section-not-empty" })
   }
 }
 
 interface RecipeRow {
   id: number
   section_id: number
-  section_name: string
   title: string
   description: string
   servings: string
@@ -123,20 +123,10 @@ interface RecipeRow {
   notes: string
 }
 
-export function getRecipe(db: DatabaseSync, id: number): Recipe | undefined {
-  const row = db
-    .prepare(
-      `SELECT recipes.*, sections.name AS section_name
-       FROM recipes JOIN sections ON sections.id = recipes.section_id
-       WHERE recipes.id = ?`
-    )
-    .get(id) as RecipeRow | undefined
-  if (!row) return undefined
-
+function fromRow(row: RecipeRow): StoredRecipe {
   return {
     id: row.id,
     sectionId: row.section_id,
-    sectionName: row.section_name,
     title: row.title,
     description: row.description,
     servings: row.servings,
@@ -164,19 +154,39 @@ function recipeParams(recipe: RecipeInput) {
   }
 }
 
+export function getRecipe(db: DatabaseSync, id: number): Recipe | undefined {
+  const row = db
+    .prepare(
+      `SELECT recipes.*, sections.name AS section_name
+       FROM recipes JOIN sections ON sections.id = recipes.section_id
+       WHERE recipes.id = ?`
+    )
+    .get(id) as (RecipeRow & { section_name: string }) | undefined
+  return row && { ...fromRow(row), sectionName: row.section_name }
+}
+
+/** Inserts a recipe with the given id, or the next free one when null. */
+function insertRecipe(
+  db: DatabaseSync,
+  recipe: RecipeInput,
+  id: number | null
+): number {
+  const { lastInsertRowid } = db
+    .prepare(
+      `INSERT INTO recipes (id, section_id, title, description, servings,
+         prep_time, cook_time, source_url, ingredients, steps, notes)
+       VALUES (:id, :section_id, :title, :description, :servings,
+         :prep_time, :cook_time, :source_url, :ingredients, :steps, :notes)`
+    )
+    .run({ ...recipeParams(recipe), id })
+  return Number(lastInsertRowid)
+}
+
 export function createRecipe(db: DatabaseSync, recipe: RecipeInput): number {
   try {
-    const { lastInsertRowid } = db
-      .prepare(
-        `INSERT INTO recipes (section_id, title, description, servings,
-           prep_time, cook_time, source_url, ingredients, steps, notes)
-         VALUES (:section_id, :title, :description, :servings,
-           :prep_time, :cook_time, :source_url, :ingredients, :steps, :notes)`
-      )
-      .run(recipeParams(recipe))
-    return Number(lastInsertRowid)
+    return insertRecipe(db, recipe, null)
   } catch (error) {
-    translate(error, SQLITE_CONSTRAINT_FOREIGNKEY, "section-not-found")
+    translate(error, { [SQLITE_CONSTRAINT_FOREIGNKEY]: "section-not-found" })
   }
 }
 
@@ -198,11 +208,63 @@ export function updateRecipe(
       .run({ ...recipeParams(recipe), id })
     if (changes === 0) throw new LibraryError("recipe-not-found")
   } catch (error) {
-    translate(error, SQLITE_CONSTRAINT_FOREIGNKEY, "section-not-found")
+    translate(error, { [SQLITE_CONSTRAINT_FOREIGNKEY]: "section-not-found" })
   }
 }
 
 export function deleteRecipe(db: DatabaseSync, id: number) {
   const { changes } = db.prepare("DELETE FROM recipes WHERE id = ?").run(id)
   if (changes === 0) throw new LibraryError("recipe-not-found")
+}
+
+export const BACKUP_FORMAT = "recipes-backup"
+export const BACKUP_VERSION = 1
+
+/** The whole library as a portable file, ids included. */
+export interface Backup {
+  format: typeof BACKUP_FORMAT
+  version: typeof BACKUP_VERSION
+  sections: Section[]
+  recipes: StoredRecipe[]
+}
+
+export function exportLibrary(db: DatabaseSync): Backup {
+  const sections = db
+    .prepare("SELECT id, name FROM sections ORDER BY id")
+    .all() as unknown as Section[]
+  const recipes = db
+    .prepare("SELECT * FROM recipes ORDER BY id")
+    .all() as unknown as RecipeRow[]
+
+  return {
+    format: BACKUP_FORMAT,
+    version: BACKUP_VERSION,
+    sections,
+    recipes: recipes.map(fromRow),
+  }
+}
+
+/**
+ * Replaces the whole library with a backup, keeping its ids so existing
+ * links keep working. Nothing changes if any part of the backup is rejected.
+ */
+export function restoreLibrary(db: DatabaseSync, backup: Backup) {
+  try {
+    transaction(db, () => {
+      db.exec("DELETE FROM recipes")
+      db.exec("DELETE FROM sections")
+      const insertSection = db.prepare(
+        "INSERT INTO sections (id, name) VALUES (?, ?)"
+      )
+      for (const section of backup.sections) {
+        insertSection.run(section.id, section.name)
+      }
+      for (const recipe of backup.recipes) insertRecipe(db, recipe, recipe.id)
+    })
+  } catch (error) {
+    translate(error, {
+      [SQLITE_CONSTRAINT_UNIQUE]: "duplicate-section",
+      [SQLITE_CONSTRAINT_FOREIGNKEY]: "section-not-found",
+    })
+  }
 }

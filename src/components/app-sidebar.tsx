@@ -3,6 +3,7 @@ import {
   IconFolderPlus,
   IconMinus,
   IconPlus,
+  IconSettings,
 } from "@tabler/icons-react"
 import * as React from "react"
 
@@ -160,6 +161,12 @@ export function AppSidebar({
               <IconFolderPlus />
               <span>New section</span>
             </SectionDialog>
+          </SidebarMenuItem>
+          <SidebarMenuItem>
+            <SidebarMenuButton render={<a href="/settings" />}>
+              <IconSettings />
+              <span>Settings</span>
+            </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarFooter>

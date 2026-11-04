@@ -7,6 +7,7 @@ A simple, fast, self-hosted recipe app. Organize recipes into sections, then fol
 - **Sections and recipes** in a sidebar: create, rename, and delete sections, and search recipes by title or section.
 - **Recipes** with a description, servings, prep and cook times, a source link, ingredients, steps, and notes. The editor gives each ingredient and step its own row; press Enter for the next ingredient, and paste a whole list to split it into rows.
 - **Cook mode** shows every step in a scrolling list with the current one centered, like song lyrics. Tap a step to jump to it, or use Previous/Next, the arrow keys, or space. Ingredients sit beside the steps on wide screens and in a drawer on phones. Each device remembers its place, and the screen stays awake while cooking (browsers only allow this over HTTPS or on `localhost`).
+- **Backups** from Settings: export the whole library as JSON, or restore a backup to replace everything (ids are kept, so links keep working).
 
 ## Development
 
