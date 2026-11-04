@@ -1,0 +1,33 @@
+---
+import { IconMoodEmpty } from "@tabler/icons-react"
+
+import { buttonVariants } from "@/components/ui/button"
+import {
+  Empty,
+  EmptyContent,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from "@/components/ui/empty"
+import AppLayout from "@/layouts/app.astro"
+---
+
+<AppLayout title="Not found" breadcrumb={["Not found"]}>
+  <Empty className="flex-1">
+    <EmptyHeader>
+      <EmptyMedia variant="icon">
+        <IconMoodEmpty />
+      </EmptyMedia>
+      <EmptyTitle>Nothing here</EmptyTitle>
+      <EmptyDescription>
+        This recipe may have been deleted, or the link is wrong.
+      </EmptyDescription>
+    </EmptyHeader>
+    <EmptyContent>
+      <a href="/" class={buttonVariants({ variant: "outline" })}>
+        Go home
+      </a>
+    </EmptyContent>
+  </Empty>
+</AppLayout>

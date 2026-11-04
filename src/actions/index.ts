@@ -3,10 +3,13 @@ import { z } from "astro/zod"
 
 import { getDatabase } from "@/server/database"
 import {
+  createRecipe,
   createSection,
+  deleteRecipe,
   deleteSection,
   LibraryError,
   renameSection,
+  updateRecipe,
   type LibraryErrorCode,
 } from "@/server/library"
 
@@ -51,6 +54,31 @@ const sectionName = z
   .min(1, "Enter a name.")
   .max(100, "Keep it under 100 characters.")
 
+const text = (max: number) => z.string().trim().max(max)
+const lines = z
+  .array(text(2000))
+  .max(200)
+  .transform((lines) => lines.filter(Boolean))
+
+const recipe = z.object({
+  sectionId: id,
+  title: text(200).min(1, "Enter a title."),
+  description: text(2000),
+  servings: text(100),
+  prepTime: text(100),
+  cookTime: text(100),
+  sourceUrl: z.union([
+    z.literal(""),
+    z.url({
+      protocol: /^https?$/,
+      error: "Enter a full web address, like https://example.com.",
+    }),
+  ]),
+  ingredients: lines,
+  steps: lines,
+  notes: text(5000),
+})
+
 export const server = {
   createSection: defineAction({
     input: z.object({ name: sectionName }),
@@ -63,5 +91,17 @@ export const server = {
   deleteSection: defineAction({
     input: z.object({ id }),
     handler: ({ id }) => library((db) => deleteSection(db, id)),
+  }),
+  createRecipe: defineAction({
+    input: recipe,
+    handler: (input) => ({ id: library((db) => createRecipe(db, input)) }),
+  }),
+  updateRecipe: defineAction({
+    input: recipe.extend({ id }),
+    handler: ({ id, ...input }) => library((db) => updateRecipe(db, id, input)),
+  }),
+  deleteRecipe: defineAction({
+    input: z.object({ id }),
+    handler: ({ id }) => library((db) => deleteRecipe(db, id)),
   }),
 }
