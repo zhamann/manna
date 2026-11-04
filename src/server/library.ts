@@ -1,6 +1,8 @@
+import { Buffer } from "node:buffer"
 import type { DatabaseSync } from "node:sqlite"
 
 import { transaction } from "./database"
+import { BACKUP_SIZE_LIMIT } from "./limits"
 
 export interface Section {
   id: number
@@ -37,6 +39,7 @@ export type LibraryErrorCode =
   | "section-not-empty"
   | "section-not-found"
   | "recipe-not-found"
+  | "library-full"
 
 export class LibraryError extends Error {
   constructor(readonly code: LibraryErrorCode) {
@@ -56,6 +59,20 @@ function translate(
 ): never {
   const code = codes[(error as { errcode?: number }).errcode ?? -1]
   throw code ? new LibraryError(code) : error
+}
+
+/**
+ * Runs a change that can grow the library, undoing it if the library would no
+ * longer fit in a backup that can be restored.
+ */
+function growing<T>(db: DatabaseSync, change: () => T): T {
+  return transaction(db, () => {
+    const result = change()
+    // A restore sends the backup as compact JSON, so measure exactly that.
+    const size = Buffer.byteLength(JSON.stringify(exportLibrary(db)))
+    if (size > BACKUP_SIZE_LIMIT) throw new LibraryError("library-full")
+    return result
+  })
 }
 
 /** All sections with their recipes, both sorted by name. */
@@ -79,10 +96,12 @@ export function listSections(db: DatabaseSync): SectionWithRecipes[] {
 
 export function createSection(db: DatabaseSync, name: string): Section {
   try {
-    const { lastInsertRowid } = db
-      .prepare("INSERT INTO sections (name) VALUES (?)")
-      .run(name)
-    return { id: Number(lastInsertRowid), name }
+    return growing(db, () => {
+      const { lastInsertRowid } = db
+        .prepare("INSERT INTO sections (name) VALUES (?)")
+        .run(name)
+      return { id: Number(lastInsertRowid), name }
+    })
   } catch (error) {
     translate(error, { [SQLITE_CONSTRAINT_UNIQUE]: "duplicate-section" })
   }
@@ -90,10 +109,12 @@ export function createSection(db: DatabaseSync, name: string): Section {
 
 export function renameSection(db: DatabaseSync, id: number, name: string) {
   try {
-    const { changes } = db
-      .prepare("UPDATE sections SET name = ? WHERE id = ?")
-      .run(name, id)
-    if (changes === 0) throw new LibraryError("section-not-found")
+    growing(db, () => {
+      const { changes } = db
+        .prepare("UPDATE sections SET name = ? WHERE id = ?")
+        .run(name, id)
+      if (changes === 0) throw new LibraryError("section-not-found")
+    })
   } catch (error) {
     translate(error, { [SQLITE_CONSTRAINT_UNIQUE]: "duplicate-section" })
   }
@@ -184,7 +205,7 @@ function insertRecipe(
 
 export function createRecipe(db: DatabaseSync, recipe: RecipeInput): number {
   try {
-    return insertRecipe(db, recipe, null)
+    return growing(db, () => insertRecipe(db, recipe, null))
   } catch (error) {
     translate(error, { [SQLITE_CONSTRAINT_FOREIGNKEY]: "section-not-found" })
   }
@@ -196,17 +217,19 @@ export function updateRecipe(
   recipe: RecipeInput
 ) {
   try {
-    const { changes } = db
-      .prepare(
-        `UPDATE recipes SET section_id = :section_id, title = :title,
-           description = :description, servings = :servings,
-           prep_time = :prep_time, cook_time = :cook_time,
-           source_url = :source_url, ingredients = :ingredients,
-           steps = :steps, notes = :notes
-         WHERE id = :id`
-      )
-      .run({ ...recipeParams(recipe), id })
-    if (changes === 0) throw new LibraryError("recipe-not-found")
+    growing(db, () => {
+      const { changes } = db
+        .prepare(
+          `UPDATE recipes SET section_id = :section_id, title = :title,
+             description = :description, servings = :servings,
+             prep_time = :prep_time, cook_time = :cook_time,
+             source_url = :source_url, ingredients = :ingredients,
+             steps = :steps, notes = :notes
+           WHERE id = :id`
+        )
+        .run({ ...recipeParams(recipe), id })
+      if (changes === 0) throw new LibraryError("recipe-not-found")
+    })
   } catch (error) {
     translate(error, { [SQLITE_CONSTRAINT_FOREIGNKEY]: "section-not-found" })
   }

@@ -5,6 +5,8 @@ import react from "@astrojs/react"
 import tailwindcss from "@tailwindcss/vite"
 import { defineConfig } from "astro/config"
 
+import { BACKUP_SIZE_LIMIT } from "./src/server/limits.ts"
+
 // https://astro.build/config
 export default defineConfig({
   output: "server",
@@ -12,7 +14,7 @@ export default defineConfig({
   integrations: [react()],
   security: {
     // Restoring a backup sends the whole library in one action call.
-    actionBodySizeLimit: 16 * 1024 * 1024,
+    actionBodySizeLimit: BACKUP_SIZE_LIMIT,
   },
   vite: {
     plugins: [tailwindcss()],

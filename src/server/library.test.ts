@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it } from "vitest"
+import { Buffer } from "node:buffer"
 import type { DatabaseSync } from "node:sqlite"
 
 import { openDatabase } from "./database"
@@ -16,6 +17,7 @@ import {
   updateRecipe,
   type RecipeInput,
 } from "./library"
+import { BACKUP_SIZE_LIMIT } from "./limits"
 
 let db: DatabaseSync
 
@@ -228,5 +230,25 @@ describe("backups", () => {
     expect(errorCode(() => restoreLibrary(db, backup))).toBe(
       "duplicate-section"
     )
+  })
+
+  it("refuses changes that would make the backup too big to restore", () => {
+    const section = createSection(db, "Baking")
+    const small = createRecipe(db, recipe(section.id, "Small"))
+    const long = Array<string>(200).fill("a".repeat(2000))
+    const big = { ...recipe(section.id, "Big"), ingredients: long, steps: long }
+
+    let recipes = 1
+    let code: string | undefined
+    while ((code = errorCode(() => createRecipe(db, big))) === undefined) {
+      recipes++
+    }
+
+    expect(code).toBe("library-full")
+    expect(exportLibrary(db).recipes).toHaveLength(recipes)
+    expect(errorCode(() => updateRecipe(db, small, big))).toBe("library-full")
+    expect(getRecipe(db, small)?.title).toBe("Small")
+    const backup = JSON.stringify(exportLibrary(db))
+    expect(Buffer.byteLength(backup)).toBeLessThanOrEqual(BACKUP_SIZE_LIMIT)
   })
 })
