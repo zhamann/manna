@@ -1,9 +1,48 @@
 ---
-import Layout from "@/layouts/main.astro"
+import { IconChefHat } from "@tabler/icons-react"
+
+import { NewSectionButton } from "@/components/section-dialog"
+import {
+  Empty,
+  EmptyContent,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from "@/components/ui/empty"
+import AppLayout from "@/layouts/app.astro"
+import { getDatabase } from "@/server/database"
+import { listSections } from "@/server/library"
+
+const hasSections = listSections(getDatabase()).length > 0
 ---
 
-<Layout>
-  <main class="flex min-h-svh items-center justify-center p-6">
-    <h1 class="text-2xl font-medium">Recipes</h1>
-  </main>
-</Layout>
+<AppLayout breadcrumb={["Recipes"]}>
+  <Empty className="flex-1">
+    <EmptyHeader>
+      <EmptyMedia variant="icon">
+        <IconChefHat />
+      </EmptyMedia>
+      {hasSections ? (
+        <>
+          <EmptyTitle>Pick a recipe</EmptyTitle>
+          <EmptyDescription>
+            Choose a recipe from the sidebar, or add one to a section.
+          </EmptyDescription>
+        </>
+      ) : (
+        <>
+          <EmptyTitle>No recipes yet</EmptyTitle>
+          <EmptyDescription>
+            Start by creating a section, like Baking or Weeknight dinners.
+          </EmptyDescription>
+        </>
+      )}
+    </EmptyHeader>
+    {!hasSections && (
+      <EmptyContent>
+        <NewSectionButton client:load />
+      </EmptyContent>
+    )}
+  </Empty>
+</AppLayout>

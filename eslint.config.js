@@ -6,7 +6,8 @@ import tseslint from "typescript-eslint"
 import { defineConfig, globalIgnores } from "eslint/config"
 
 export default defineConfig([
-  globalIgnores(["dist", ".astro"]),
+  // shadcn CLI output stays as generated.
+  globalIgnores(["dist", ".astro", "src/components/ui", "src/hooks/use-mobile.ts"]),
   {
     files: ["**/*.{ts,tsx}"],
     extends: [
