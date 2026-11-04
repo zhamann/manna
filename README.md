@@ -50,7 +50,16 @@ pnpm start
 
 ## Releasing
 
-Push a tag like `v1.2.3` to publish `ghcr.io/zhamann/manna` as `1.2.3`, `1.2`, and `latest`.
+Set `version` in `package.json` and merge that change, then push a matching tag from `main`:
+
+```bash
+git tag v1.2.3
+git push origin v1.2.3
+```
+
+The release workflow runs the CI checks, confirms the tag matches `package.json`, and publishes `ghcr.io/zhamann/manna` as `1.2.3`, `1.2`, and `latest`. A prerelease tag like `v1.3.0-rc.1` is published only under its own version, so `latest` stays on the newest stable release.
+
+GitHub creates the package as private on the first release; make it public in the package settings so `docker compose pull` works without signing in.
 
 ## License
 
