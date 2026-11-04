@@ -86,7 +86,7 @@ const unique = (ids: number[]) => new Set(ids).size === ids.length
 
 const backup = z
   .object({
-    format: z.literal(BACKUP_FORMAT, "This file isn't a recipes backup."),
+    format: z.literal(BACKUP_FORMAT, "This file isn't a Manna backup."),
     version: z.literal(
       BACKUP_VERSION,
       "This backup is from a newer version of the app."

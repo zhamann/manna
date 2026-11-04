@@ -1,6 +1,6 @@
-# Recipes
+# Manna
 
-A simple, fast, self-hosted recipe app. Recipes live in sections shown in a sidebar; each recipe has a lyrics-style cook mode for following steps while cooking. It must work well on phones, tablets, and desktops.
+Manna is a simple, fast, self-hosted recipe app. Recipes live in sections shown in a sidebar; each recipe has a lyrics-style cook mode for following steps while cooking. It must work well on phones, tablets, and desktops.
 
 ## Stack
 
@@ -25,10 +25,10 @@ A simple, fast, self-hosted recipe app. Recipes live in sections shown in a side
 
 ## Data
 
-- SQLite through Node's built-in `node:sqlite`, stored at `$DATA_DIR/recipes.db` (default `./data`).
+- SQLite through Node's built-in `node:sqlite`, stored at `$DATA_DIR/manna.db` (default `./data`).
 - `src/server/library.ts` owns all reads and writes; the schema enforces the rules (unique section names, only empty sections can be deleted) and the library translates violations into `LibraryError` codes.
 - Schema changes are new numbered files in `src/server/migrations/`, applied in order at startup. Never edit a shipped migration.
-- Tests use Vitest against an in-memory database (`openDatabase(":memory:")`). Don't add Playwright.
+- Tests use Vitest against an in-memory database (`openDatabase(":memory:")`). Don't add Playwright as a dependency.
 
 ## Git and pull requests
 
