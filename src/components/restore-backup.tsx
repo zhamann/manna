@@ -65,7 +65,7 @@ export function RestoreBackup({
           event.target.value = ""
         }}
       />
-      <Button variant="outline" onClick={() => fileInput.current?.click()}>
+      <Button variant="secondary" onClick={() => fileInput.current?.click()}>
         <IconUpload />
         Restore
       </Button>
