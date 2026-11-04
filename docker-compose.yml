@@ -1,5 +1,5 @@
 services:
-  recipes:
+  manna:
     image: ghcr.io/zhamann/manna:latest
     # To build from source instead: comment out `image` and uncomment `build`.
     # build: .
