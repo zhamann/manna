@@ -115,7 +115,7 @@ export function CookMode({ recipe }: { recipe: CookRecipe }) {
       <header className="flex items-center gap-3 px-4 pt-3">
         <a
           href={recipeHref}
-          className={buttonVariants({ variant: "ghost", size: "icon" })}
+          className={cn(buttonVariants({ variant: "ghost", size: "icon" }))}
           aria-label="Exit cook mode"
         >
           <IconX />
@@ -172,7 +172,7 @@ export function CookMode({ recipe }: { recipe: CookRecipe }) {
                 <EmptyContent>
                   <a
                     href={`${recipeHref}/edit`}
-                    className={buttonVariants({ variant: "outline" })}
+                    className={cn(buttonVariants({ variant: "outline" }))}
                   >
                     <IconPencil />
                     Edit recipe
@@ -194,7 +194,7 @@ export function CookMode({ recipe }: { recipe: CookRecipe }) {
                   <Button variant="outline" onClick={() => go(0)}>
                     Start over
                   </Button>
-                  <a href={recipeHref} className={buttonVariants()}>
+                  <a href={recipeHref} className={cn(buttonVariants())}>
                     Back to recipe
                   </a>
                 </EmptyContent>

@@ -1,6 +1,8 @@
 ---
 import { IconMoodEmpty } from "@tabler/icons-react"
 
+import { cn } from "cn"
+
 import { buttonVariants } from "@/components/ui/button"
 import {
   Empty,
@@ -25,7 +27,7 @@ import AppLayout from "@/layouts/app.astro"
       </EmptyDescription>
     </EmptyHeader>
     <EmptyContent>
-      <a href="/" class={buttonVariants({ variant: "outline" })}>
+      <a href="/" class={cn(buttonVariants({ variant: "outline" }))}>
         Go home
       </a>
     </EmptyContent>

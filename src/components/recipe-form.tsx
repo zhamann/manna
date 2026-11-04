@@ -3,6 +3,8 @@ import { useState, useTransition } from "react"
 
 import { DeleteRecipeDialog } from "@/components/delete-recipe-dialog"
 import { ListField, toRows } from "@/components/list-field"
+import { cn } from "cn"
+
 import { Button, buttonVariants } from "@/components/ui/button"
 import {
   Field,
@@ -183,7 +185,7 @@ export function RecipeForm({
           <div className="flex flex-col-reverse gap-2 sm:ml-auto sm:flex-row">
             <a
               href={recipe ? `/recipes/${recipe.id}` : "/"}
-              className={buttonVariants({ variant: "outline" })}
+              className={cn(buttonVariants({ variant: "outline" }))}
             >
               Cancel
             </a>
