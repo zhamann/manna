@@ -20,6 +20,14 @@ pnpm build
 pnpm start
 ```
 
+## Configuration
+
+| Variable   | Default     | Purpose                                         |
+| ---------- | ----------- | ----------------------------------------------- |
+| `DATA_DIR` | `./data`    | Folder holding the SQLite database              |
+| `PORT`     | `4321`      | Port the production server listens on           |
+| `HOST`     | `localhost` | Interface to bind; use `0.0.0.0` to expose it   |
+
 ## License
 
 [AGPL-3.0](LICENSE)
