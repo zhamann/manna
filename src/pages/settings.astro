@@ -2,6 +2,8 @@
 import { IconDownload } from "@tabler/icons-react"
 
 import { RestoreBackup } from "@/components/restore-backup"
+import { cn } from "cn"
+
 import { buttonVariants } from "@/components/ui/button"
 import {
   Item,
@@ -34,7 +36,7 @@ const recipeCount = sections.reduce((n, s) => n + s.recipes.length, 0)
           <a
             href="/backup.json"
             download
-            class={buttonVariants({ variant: "outline" })}
+            class={cn(buttonVariants({ variant: "secondary" }))}
           >
             <IconDownload />
             Export
