@@ -1,0 +1,49 @@
+---
+import { IconFolderPlus } from "@tabler/icons-react"
+
+import { RecipeForm } from "@/components/recipe-form"
+import { NewSectionButton } from "@/components/section-dialog"
+import {
+  Empty,
+  EmptyContent,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from "@/components/ui/empty"
+import AppLayout from "@/layouts/app.astro"
+import { getDatabase } from "@/server/database"
+import { listSections } from "@/server/library"
+import { parseId } from "@/server/params"
+
+const sections = listSections(getDatabase()).map(({ id, name }) => ({
+  id,
+  name,
+}))
+const requested = parseId(Astro.url.searchParams.get("section"))
+const sectionId =
+  sections.find((section) => section.id === requested)?.id ?? sections[0]?.id
+---
+
+<AppLayout title="New recipe" breadcrumb={["New recipe"]}>
+  {sectionId ? (
+    <div class="mx-auto w-full max-w-2xl p-4 md:p-8">
+      <RecipeForm client:load sections={sections} sectionId={sectionId} />
+    </div>
+  ) : (
+    <Empty className="flex-1">
+      <EmptyHeader>
+        <EmptyMedia variant="icon">
+          <IconFolderPlus />
+        </EmptyMedia>
+        <EmptyTitle>Create a section first</EmptyTitle>
+        <EmptyDescription>
+          Every recipe lives in a section, like Baking or Weeknight dinners.
+        </EmptyDescription>
+      </EmptyHeader>
+      <EmptyContent>
+        <NewSectionButton client:load />
+      </EmptyContent>
+    </Empty>
+  )}
+</AppLayout>

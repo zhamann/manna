@@ -34,7 +34,7 @@ export function SectionDialog({
   const [error, setError] = useState<string>()
   const [pending, startTransition] = useTransition()
 
-  function submit(event: React.FormEvent<HTMLFormElement>) {
+  function submit(event: React.SubmitEvent<HTMLFormElement>) {
     event.preventDefault()
     const name = String(new FormData(event.currentTarget).get("name"))
 

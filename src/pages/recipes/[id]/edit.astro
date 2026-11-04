@@ -1,0 +1,24 @@
+---
+import { RecipeForm } from "@/components/recipe-form"
+import AppLayout from "@/layouts/app.astro"
+import { getDatabase } from "@/server/database"
+import { getRecipe, listSections } from "@/server/library"
+import { parseId } from "@/server/params"
+
+const db = getDatabase()
+const id = parseId(Astro.params.id)
+const recipe = id && getRecipe(db, id)
+if (!recipe) return Astro.rewrite("/404")
+
+const sections = listSections(db).map(({ id, name }) => ({ id, name }))
+---
+
+<AppLayout
+  title={`Edit ${recipe.title}`}
+  breadcrumb={[recipe.sectionName, recipe.title, "Edit"]}
+  activeRecipeId={recipe.id}
+>
+  <div class="mx-auto w-full max-w-2xl p-4 md:p-8">
+    <RecipeForm client:load sections={sections} recipe={recipe} />
+  </div>
+</AppLayout>
