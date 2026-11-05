@@ -112,7 +112,7 @@ export function CookMode({ recipe }: { recipe: CookRecipe }) {
 
   return (
     <div className="flex h-svh flex-col">
-      <header className="flex items-center gap-3 px-4 pt-3">
+      <header className="sticky top-0 z-10 flex items-center gap-3 bg-background px-4 pt-3">
         <a
           href={recipeHref}
           className={cn(buttonVariants({ variant: "ghost", size: "icon" }))}
