@@ -10,6 +10,7 @@ Manna is a simple, fast, self-hosted recipe app. Organize recipes into sections,
 
 - **Sections and recipes** in a sidebar: create, rename, and delete sections, and search recipes by title or section.
 - **Recipes** with a description, servings, prep and cook times, a source link, ingredients, steps, and notes. The editor gives each ingredient and step its own row; press Enter for the next ingredient, and paste a whole list to split it into rows.
+- **Import from a link**: paste a recipe page's address on the New recipe page and Manna fills in the form for you to check before saving. It reads the recipe data most recipe sites publish for search engines (schema.org JSON-LD). Some big sites turn away requests that don't come from a browser; copy those recipes in by hand.
 - **Cook mode** shows every step in a scrolling list with the current one centered, like song lyrics. Tap a step to jump to it, or use Previous/Next, the arrow keys, or space. Ingredients sit beside the steps on wide screens and in a drawer on phones. Each device remembers its place, and the screen stays awake while cooking (browsers only allow this over HTTPS or on `localhost`).
 - **Light and dark themes**: follow the device, or pick one in Settings. Each device remembers its choice.
 - **Backups** from Settings: export the whole library as JSON, or restore a backup to replace everything (ids are kept, so links keep working). Backups are limited to 16 MB, thousands of typical recipes; the app refuses a change that would make the library too big to restore.
@@ -28,6 +29,8 @@ Open http://localhost:4321. Images are built for `linux/amd64` and `linux/arm64`
 On an iPhone or iPad, open the app in Safari and choose **Share → Add to Home Screen** to get a Manna icon that opens it.
 
 The app has no accounts, so keep it on a private network or behind a reverse proxy that handles authentication. Serve it over HTTPS if you want cook mode to keep the screen awake.
+
+Importing from a link makes the server fetch the page, so it needs outbound internet access. It only connects to public addresses: it refuses `localhost`, private networks, and link-local addresses such as cloud metadata services, including through redirects and DNS. That also means it can't import from another app on your own network.
 
 To use another port, change the host side of the mapping in `docker-compose.yml`, e.g. `"8080:4321"` serves the app on port 8080. To reach the app only through a reverse proxy on the same machine, bind it to loopback with `"127.0.0.1:4321:4321"`.
 

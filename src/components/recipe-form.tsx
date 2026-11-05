@@ -1,10 +1,13 @@
+import { IconInfoCircle } from "@tabler/icons-react"
 import { actions, isInputError } from "astro:actions"
-import { useState, useTransition } from "react"
+import { useRef, useState, useTransition } from "react"
 
 import { DeleteRecipeDialog } from "@/components/delete-recipe-dialog"
+import { ImportRecipeDialog } from "@/components/import-recipe-dialog"
 import { ListField, toRows } from "@/components/list-field"
 import { cn } from "cn"
 
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Button, buttonVariants } from "@/components/ui/button"
 import {
   Field,
@@ -15,6 +18,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { NativeSelect, NativeSelectOption } from "@/components/ui/native-select"
 import { Textarea } from "@/components/ui/textarea"
+import type { ImportedRecipe } from "@/server/import"
 import type { Recipe, Section } from "@/server/library"
 
 type Errors = Record<string, string[] | undefined>
@@ -34,7 +38,26 @@ export function RecipeForm({
   )
   const [steps, setSteps] = useState(() => toRows(recipe?.steps ?? [""]))
   const [errors, setErrors] = useState<Errors>({})
+  const [importedFrom, setImportedFrom] = useState<string>()
   const [pending, startTransition] = useTransition()
+  const formRef = useRef<HTMLFormElement>(null)
+
+  /** Replaces the form's fields with an imported recipe's; keeps the section and notes. */
+  function fill({ ingredients, steps, ...fields }: ImportedRecipe) {
+    for (const [name, value] of Object.entries(fields)) {
+      const control = formRef.current?.elements.namedItem(name)
+      if (
+        control instanceof HTMLInputElement ||
+        control instanceof HTMLTextAreaElement
+      ) {
+        control.value = value
+      }
+    }
+    setIngredients(toRows(ingredients.length ? ingredients : [""]))
+    setSteps(toRows(steps.length ? steps : [""]))
+    setErrors({})
+    setImportedFrom(new URL(fields.sourceUrl).hostname.replace(/^www\./, ""))
+  }
 
   function submit(event: React.SubmitEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -73,8 +96,22 @@ export function RecipeForm({
   const invalid = (name: string) => (error(name) ? true : undefined)
 
   return (
-    <form onSubmit={submit} noValidate>
+    <form ref={formRef} onSubmit={submit} noValidate>
       <FieldGroup>
+        {!recipe && (
+          <div className="flex flex-col items-start gap-4">
+            <ImportRecipeDialog onImport={fill} />
+            {importedFrom && (
+              <Alert>
+                <IconInfoCircle />
+                <AlertTitle>Imported from {importedFrom}</AlertTitle>
+                <AlertDescription>
+                  Check each field before creating the recipe.
+                </AlertDescription>
+              </Alert>
+            )}
+          </div>
+        )}
         <Field data-invalid={invalid("title")}>
           <FieldLabel htmlFor="title">Title</FieldLabel>
           <Input
