@@ -2,6 +2,7 @@
 import { IconDownload } from "@tabler/icons-react"
 
 import { RestoreBackup } from "@/components/restore-backup"
+import { ThemeSetting } from "@/components/theme-setting"
 import { cn } from "cn"
 
 import { buttonVariants } from "@/components/ui/button"
@@ -14,17 +15,30 @@ import {
   ItemTitle,
 } from "@/components/ui/item"
 import AppLayout from "@/layouts/app.astro"
+import { parseTheme, THEME_COOKIE } from "@/lib/theme"
 import { getDatabase } from "@/server/database"
 import { listSections } from "@/server/library"
 
 const sections = listSections(getDatabase())
 const recipeCount = sections.reduce((n, s) => n + s.recipes.length, 0)
+const theme = parseTheme(Astro.cookies.get(THEME_COOKIE)?.value)
 ---
 
 <AppLayout title="Settings" breadcrumb={["Settings"]}>
   <div class="mx-auto flex w-full max-w-2xl flex-col gap-6 p-4 md:p-8">
     <h1 class="font-heading text-4xl">Settings</h1>
     <ItemGroup>
+      <Item variant="outline">
+        <ItemContent className="min-w-56">
+          <ItemTitle>Theme</ItemTitle>
+          <ItemDescription>
+            Use light or dark mode, or match this device.
+          </ItemDescription>
+        </ItemContent>
+        <ItemActions>
+          <ThemeSetting client:load theme={theme} />
+        </ItemActions>
+      </Item>
       <Item variant="outline">
         <ItemContent>
           <ItemTitle>Export a backup</ItemTitle>
