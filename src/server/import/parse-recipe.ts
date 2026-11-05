@@ -41,13 +41,17 @@ export function parseRecipe(
   return undefined
 }
 
+/**
+ * Parses a script's JSON, ignoring whatever wraps it: some pages put it in
+ * an HTML comment or a CDATA section.
+ */
 function parseJson(script: string): unknown {
-  const json = script
-    .trim()
-    .replace(/^(?:<!--|\/\/\s*<!\[CDATA\[)/, "")
-    .replace(/(?:-->|\/\/\s*\]\]>)$/, "")
+  const json = script.replace("<![CDATA[", "").replace("]]>", "")
+  const start = json.search(/[[{]/)
+  const end = Math.max(json.lastIndexOf("}"), json.lastIndexOf("]"))
+  if (start < 0 || end < start) return undefined
   try {
-    return JSON.parse(json)
+    return JSON.parse(json.slice(start, end + 1))
   } catch {
     return undefined
   }
@@ -161,11 +165,22 @@ function clip(value: string, max: number): string {
   return value.length > max ? `${value.slice(0, max - 1).trimEnd()}…` : value
 }
 
-/** Removes tags, spacing out block-level ones but not inline ones like <b>. */
+/**
+ * Removes tags, spacing out block-level ones but not inline ones like <b>.
+ * A tag cut off at the end of the text goes too, and stripping repeats until
+ * nothing changes, so no fragment of markup is left behind.
+ */
 function stripTags(value: string): string {
-  return value
-    .replace(/<\/?(?:p|br|li|ol|ul|div|h\d|tr|td|th)\b[^>]*>/gi, " ")
-    .replace(/<[^>]*>/g, "")
+  let text = value.replace(
+    /<\/?(?:p|br|li|ol|ul|div|h\d|tr|td|th)\b[^>]*>/gi,
+    " "
+  )
+  for (let previous = ""; text !== previous;) {
+    previous = text
+    // Only "<" that starts a tag, so text like "cook to <160°F" stays.
+    text = text.replace(/<[a-z/!?][^>]*(?:>|$)/gi, "")
+  }
+  return text
 }
 
 const namedEntities: Record<string, string> = {

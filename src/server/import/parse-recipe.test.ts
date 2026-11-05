@@ -88,6 +88,33 @@ describe("parseRecipe", () => {
     expect(parseRecipe(html, url)?.title).toBe("Pancakes")
   })
 
+  it("reads JSON-LD wrapped in an HTML comment or CDATA section", () => {
+    const json = JSON.stringify({ "@type": "Recipe", name: "Waffles" })
+    for (const wrapped of [
+      `<!-- ${json} -->`,
+      `<!-- ${json} --!>`,
+      `//<![CDATA[\n${json}\n//]]>`,
+    ]) {
+      expect(parseRecipe(page(wrapped), url)?.title, wrapped).toBe("Waffles")
+    }
+  })
+
+  it("drops a tag cut off at the end, but keeps a plain <", () => {
+    const html = page({
+      "@type": "Recipe",
+      name: "Pork chops",
+      description: "Juicy and quick. <img src=x onerror=alert(1)",
+      recipeInstructions: ["Cook to <145°F inside.", "Rest for 5 minutes."],
+    })
+
+    const recipe = parseRecipe(html, url)
+    expect(recipe?.description).toBe("Juicy and quick.")
+    expect(recipe?.steps).toEqual([
+      "Cook to <145°F inside.",
+      "Rest for 5 minutes.",
+    ])
+  })
+
   it("flattens HowToSections into steps", () => {
     const html = page({
       "@type": "Recipe",
