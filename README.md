@@ -2,9 +2,7 @@
 
 Manna is a simple, fast, self-hosted recipe app. Organize recipes into sections, then follow them step by step in cook mode on your phone, tablet, or desktop.
 
-![A banana bread recipe with ingredients and steps, beside the sidebar of sections](docs/screenshots/desktop-recipe.png)
-
-![Cook mode with the current step centered and the ingredients alongside](docs/screenshots/desktop-cook-mode.png)
+![Manna, a simple, fast, self-hosted recipe app: a banana bread recipe on a MacBook Air beside the sidebar of sections, and the same recipe in cook mode on an iPhone](docs/screenshots/manna.png)
 
 ## Features
 
