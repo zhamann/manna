@@ -4,10 +4,13 @@ import {
   IconChevronRight,
   IconConfetti,
   IconPencil,
+  IconSun,
+  IconSunOff,
   IconX,
 } from "@tabler/icons-react"
 import { cn } from "cn"
 import { useEffect, useRef, useState } from "react"
+import { toast } from "sonner"
 
 import { Button, buttonVariants } from "@/components/ui/button"
 import {
@@ -27,6 +30,13 @@ import {
 } from "@/components/ui/empty"
 import { Item, ItemContent } from "@/components/ui/item"
 import { Progress } from "@/components/ui/progress"
+import { Toaster } from "@/components/ui/sonner"
+import {
+  canKeepScreenAwake,
+  screenWakeLock,
+  type ScreenWakeLock,
+} from "@/lib/wake-lock"
+import { useIsMobile } from "@/hooks/use-mobile"
 import type { Recipe } from "@/server/library"
 
 type CookRecipe = Pick<Recipe, "id" | "title" | "ingredients" | "steps">
@@ -47,7 +57,8 @@ export function CookMode({ recipe }: { recipe: CookRecipe }) {
   const scrolledOnce = useRef(false)
   const done = current === steps.length
 
-  useWakeLock()
+  const keepAwake = useKeepAwake()
+  const isMobile = useIsMobile()
 
   const go = (step: number) =>
     setCurrent(Math.max(0, Math.min(step, steps.length)))
@@ -246,10 +257,32 @@ export function CookMode({ recipe }: { recipe: CookRecipe }) {
       </div>
       {steps.length > 0 && (
         <footer className="flex gap-2 p-4">
+          {keepAwake.supported && (
+            <Button
+              size="lg"
+              variant="outline"
+              className="size-12 md:w-auto"
+              aria-label="Keep awake"
+              aria-pressed={keepAwake.on}
+              onClick={async () => {
+                const on = !keepAwake.on
+                const held = await keepAwake.set(on)
+                // Phones show only the icon, so say what happened.
+                if (!isMobile) return
+                const options = { id: "keep-awake" }
+                if (!on) toast("The screen can turn off again", options)
+                else if (held) toast("The screen will stay on", options)
+                else toast.error("Couldn't keep the screen on", options)
+              }}
+            >
+              {keepAwake.on ? <IconSun /> : <IconSunOff />}
+              <span className="hidden md:inline">Keep awake</span>
+            </Button>
+          )}
           <Button
             size="lg"
             variant="outline"
-            className="h-12 flex-1 sm:flex-none"
+            className="h-12 flex-1 sm:ml-auto sm:flex-none"
             disabled={current === 0}
             onClick={() => go(current - 1)}
           >
@@ -259,7 +292,7 @@ export function CookMode({ recipe }: { recipe: CookRecipe }) {
           {!done && (
             <Button
               size="lg"
-              className="h-12 flex-1 sm:ml-auto sm:flex-none"
+              className="h-12 flex-1 sm:flex-none"
               onClick={() => go(current + 1)}
             >
               {current === steps.length - 1 ? "Finish" : "Next"}
@@ -268,6 +301,14 @@ export function CookMode({ recipe }: { recipe: CookRecipe }) {
           )}
         </footer>
       )}
+      {/* Toasts sit just above the keep-awake button: the footer is 16px of
+          padding around 48px buttons. */}
+      <Toaster
+        theme="dark"
+        position="bottom-left"
+        offset={{ bottom: 72, left: 16 }}
+        mobileOffset={{ bottom: 72, left: 16, right: 16 }}
+      />
     </div>
   )
 }
@@ -295,30 +336,30 @@ function saveStep(recipeId: number, step: number | undefined) {
   }
 }
 
-/** Keeps the screen on while cook mode is open, where the browser allows. */
-function useWakeLock() {
+/**
+ * Keeps the screen on while cook mode is open, once turned on. Each visit
+ * starts off: Safari only allows it from a tap. `on` is whether the screen is
+ * actually being kept on.
+ */
+function useKeepAwake() {
+  const [on, setOn] = useState(false)
+  const wakeLock = useRef<ScreenWakeLock>(null)
+
   useEffect(() => {
-    let lock: WakeLockSentinel | undefined
-    let active = true
-
-    async function request() {
-      if (!("wakeLock" in navigator) || document.visibilityState !== "visible")
-        return
-      try {
-        lock = await navigator.wakeLock.request("screen")
-        if (!active) await lock.release()
-      } catch {
-        // Denied or unsupported (e.g. plain HTTP); the screen may dim.
-      }
-    }
-
-    request()
-    // Browsers drop the lock when the page is hidden; take it back on return.
-    document.addEventListener("visibilitychange", request)
+    const lock = screenWakeLock(setOn)
+    wakeLock.current = lock
     return () => {
-      active = false
-      document.removeEventListener("visibilitychange", request)
-      lock?.release()
+      lock.stop()
+      wakeLock.current = null
     }
   }, [])
+
+  /** Resolves to whether the screen is now being kept on. */
+  async function set(keepAwake: boolean): Promise<boolean> {
+    if (keepAwake) return (await wakeLock.current?.enable()) ?? false
+    wakeLock.current?.disable()
+    return false
+  }
+
+  return { supported: canKeepScreenAwake(), on, set }
 }
