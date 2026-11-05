@@ -25,6 +25,8 @@ docker compose up -d
 
 Open http://localhost:4321. Images are built for `linux/amd64` and `linux/arm64`.
 
+On an iPhone or iPad, open the app in Safari and choose **Share → Add to Home Screen** to get a Manna icon that opens it.
+
 The app has no accounts, so keep it on a private network or behind a reverse proxy that handles authentication. Serve it over HTTPS if you want cook mode to keep the screen awake.
 
 To use another port, change the host side of the mapping in `docker-compose.yml`, e.g. `"8080:4321"` serves the app on port 8080. To reach the app only through a reverse proxy on the same machine, bind it to loopback with `"127.0.0.1:4321:4321"`.
