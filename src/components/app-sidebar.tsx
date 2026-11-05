@@ -71,13 +71,17 @@ export function AppSidebar({
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton size="lg" render={<a href="/" />}>
-              <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
-                <MannaMark className="size-5" />
+            <SidebarMenuButton
+              size="lg"
+              className="gap-3"
+              render={<a href="/" />}
+            >
+              <div className="flex aspect-square size-10 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
+                <MannaMark className="size-6" />
               </div>
-              <div className="flex flex-col gap-0.5 leading-none">
-                <span className="font-heading text-lg">Manna</span>
-                <span className="text-xs text-muted-foreground">
+              <div className="flex flex-col gap-1.5">
+                <span className="font-heading text-lg/none">Manna</span>
+                <span className="text-xs/none text-muted-foreground">
                   {recipeCount} {recipeCount === 1 ? "recipe" : "recipes"}
                 </span>
               </div>
