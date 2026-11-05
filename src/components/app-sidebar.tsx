@@ -111,7 +111,7 @@ export function AppSidebar({
                 >
                   <SidebarMenuItem>
                     <SidebarMenuButton render={<CollapsibleTrigger />}>
-                      {section.name}{" "}
+                      <span className="truncate">{section.name}</span>
                       <IconPlus className="ml-auto group-aria-expanded/menu-button:hidden" />
                       <IconMinus className="ml-auto hidden group-aria-expanded/menu-button:block" />
                     </SidebarMenuButton>
@@ -127,6 +127,7 @@ export function AppSidebar({
                             <SidebarMenuSubItem key={recipe.id}>
                               <SidebarMenuSubButton
                                 isActive={active}
+                                className="h-auto min-h-7 py-1"
                                 render={
                                   <a
                                     ref={active ? activeRef : undefined}
