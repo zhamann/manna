@@ -6,7 +6,7 @@ Manna is a simple, fast, self-hosted recipe app. Organize recipes into sections,
 
 ## Features
 
-- **Sections and recipes** in a sidebar: create, rename, and delete sections, and search recipes by title or section.
+- **Sections and recipes** in a sidebar: create, rename, and delete sections, and search recipes by title or section. On phones, swipe right to open the sidebar and left to close it.
 - **Recipes** with a description, servings, prep and cook times, a source link, ingredients, steps, and notes. The editor gives each ingredient and step its own row; press Enter for the next ingredient, and paste a whole list to split it into rows.
 - **Import from a link**: paste a recipe page's address on the New recipe page and Manna fills in the form for you to check before saving. It reads the recipe data most recipe sites publish for search engines (schema.org JSON-LD). Some big sites turn away requests that don't come from a browser; copy those recipes in by hand.
 - **Cook mode** shows every step in a scrolling list with the current one centered, like song lyrics. Tap a step to jump to it, or use Previous/Next, the arrow keys, or space. Ingredients sit beside the steps on wide screens and in a drawer on phones. Each device remembers its place. Tap Keep awake in the bottom-left corner to keep the screen on while cooking; it shows when it's on, and tapping again lets the screen sleep. Browsers only allow this over HTTPS or on `localhost`, and Home Screen apps need iOS 18.4 or later.

@@ -1,6 +1,7 @@
 import { Fragment } from "react"
 
 import { AppSidebar } from "@/components/app-sidebar"
+import { SidebarSwipe } from "@/components/sidebar-swipe"
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -35,6 +36,7 @@ export function AppShell({
 }) {
   return (
     <SidebarProvider defaultOpen={sidebarOpen}>
+      <SidebarSwipe />
       <AppSidebar
         sections={sections}
         activeRecipeId={activeRecipeId}
