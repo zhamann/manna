@@ -240,6 +240,46 @@ export function deleteRecipe(db: DatabaseSync, id: number) {
   if (changes === 0) throw new LibraryError("recipe-not-found")
 }
 
+/** A recipe as listed on the home page. */
+export interface RecipeSummary {
+  id: number
+  title: string
+  sectionName: string
+}
+
+const SUMMARY_COLUMNS = `recipes.id, recipes.title, sections.name AS sectionName
+  FROM recipes JOIN sections ON sections.id = recipes.section_id`
+
+/** Notes that a recipe was opened, for the recently viewed list. */
+export function recordView(db: DatabaseSync, id: number, at = Date.now()) {
+  db.prepare("UPDATE recipes SET viewed_at = ? WHERE id = ?").run(at, id)
+}
+
+/** Recipes opened most recently first; ones never opened are left out. */
+export function listRecentlyViewed(
+  db: DatabaseSync,
+  limit: number
+): RecipeSummary[] {
+  return db
+    .prepare(
+      `SELECT ${SUMMARY_COLUMNS}
+       WHERE recipes.viewed_at IS NOT NULL
+       ORDER BY recipes.viewed_at DESC, recipes.id DESC
+       LIMIT ?`
+    )
+    .all(limit) as unknown as RecipeSummary[]
+}
+
+/** The newest recipes first: each new recipe gets the highest id. */
+export function listRecentlyAdded(
+  db: DatabaseSync,
+  limit: number
+): RecipeSummary[] {
+  return db
+    .prepare(`SELECT ${SUMMARY_COLUMNS} ORDER BY recipes.id DESC LIMIT ?`)
+    .all(limit) as unknown as RecipeSummary[]
+}
+
 export const BACKUP_FORMAT = "manna-backup"
 export const BACKUP_VERSION = 1
 

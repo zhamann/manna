@@ -11,7 +11,10 @@ import {
   exportLibrary,
   getRecipe,
   LibraryError,
+  listRecentlyAdded,
+  listRecentlyViewed,
   listSections,
+  recordView,
   renameSection,
   restoreLibrary,
   updateRecipe,
@@ -168,6 +171,54 @@ describe("recipes", () => {
     expect(
       errorCode(() => updateRecipe(db, 99, recipe(section.id, "Scones")))
     ).toBe("recipe-not-found")
+  })
+})
+
+describe("recent recipes", () => {
+  it("lists recipes by when they were last viewed", () => {
+    const baking = createSection(db, "Baking")
+    const mains = createSection(db, "Mains")
+    const scones = createRecipe(db, recipe(baking.id, "Scones"))
+    const stew = createRecipe(db, recipe(mains.id, "Stew"))
+    createRecipe(db, recipe(mains.id, "Never opened"))
+
+    recordView(db, scones, 1000)
+    recordView(db, stew, 2000)
+    expect(listRecentlyViewed(db, 10)).toEqual([
+      { id: stew, title: "Stew", sectionName: "Mains" },
+      { id: scones, title: "Scones", sectionName: "Baking" },
+    ])
+
+    recordView(db, scones, 3000)
+    expect(listRecentlyViewed(db, 1)).toEqual([
+      { id: scones, title: "Scones", sectionName: "Baking" },
+    ])
+  })
+
+  it("lists the newest recipes first", () => {
+    const section = createSection(db, "Baking")
+    const first = createRecipe(db, recipe(section.id, "First"))
+    const second = createRecipe(db, recipe(section.id, "Second"))
+    const third = createRecipe(db, recipe(section.id, "Third"))
+
+    expect(listRecentlyAdded(db, 2).map(({ id }) => id)).toEqual([
+      third,
+      second,
+    ])
+    deleteRecipe(db, third)
+    expect(listRecentlyAdded(db, 5).map(({ id }) => id)).toEqual([
+      second,
+      first,
+    ])
+  })
+
+  it("keeps view history out of backups", () => {
+    const section = createSection(db, "Baking")
+    const id = createRecipe(db, recipe(section.id, "Scones"))
+    recordView(db, id)
+
+    expect(exportLibrary(db).recipes[0]).not.toHaveProperty("viewedAt")
+    expect(exportLibrary(db).recipes[0]).not.toHaveProperty("viewed_at")
   })
 })
 
