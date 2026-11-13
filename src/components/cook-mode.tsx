@@ -126,7 +126,9 @@ export function CookMode({ recipe }: { recipe: CookRecipe }) {
 
   return (
     <div className="flex h-svh flex-col surface-cook">
-      <header className="z-10 flex items-center gap-3 px-4 pt-3 md:px-6 md:pt-5">
+      {/* Sticky and solid, so iOS paints the status bar to match instead of
+          blurring the top of the page. */}
+      <header className="sticky top-0 z-10 flex items-center gap-3 bg-background px-4 pt-3 md:px-6 md:pt-5">
         <a
           href={recipeHref}
           className={cn(
