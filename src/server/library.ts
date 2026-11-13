@@ -1,13 +1,22 @@
 import { Buffer } from "node:buffer"
 import type { DatabaseSync } from "node:sqlite"
 
+import { APP_HUE, hueAt, isHue, nextHue, type Hue } from "@/lib/hues"
+
 import { transaction } from "./database"
 import { BACKUP_SIZE_LIMIT } from "./limits"
 
 export interface Section {
   id: number
   name: string
+  color: Hue
 }
+
+/** A section's editable fields. */
+export type SectionInput = Pick<Section, "name" | "color">
+
+/** Colors read back from the database, in case one was set by hand. */
+const toHue = (color: unknown): Hue => (isHue(color) ? color : APP_HUE)
 
 export interface SectionWithRecipes extends Section {
   recipes: { id: number; title: string }[]
@@ -32,6 +41,7 @@ export interface StoredRecipe extends RecipeInput {
 
 export interface Recipe extends StoredRecipe {
   sectionName: string
+  sectionColor: Hue
 }
 
 export type LibraryErrorCode =
@@ -78,7 +88,9 @@ function growing<T>(db: DatabaseSync, change: () => T): T {
 /** All sections with their recipes, both sorted by name. */
 export function listSections(db: DatabaseSync): SectionWithRecipes[] {
   const sections = db
-    .prepare("SELECT id, name FROM sections ORDER BY name COLLATE NOCASE")
+    .prepare(
+      "SELECT id, name, color FROM sections ORDER BY name COLLATE NOCASE"
+    )
     .all() as unknown as Section[]
   const recipes = db
     .prepare(
@@ -88,31 +100,42 @@ export function listSections(db: DatabaseSync): SectionWithRecipes[] {
 
   return sections.map((section) => ({
     ...section,
+    color: toHue(section.color),
     recipes: recipes
       .filter((recipe) => recipe.section_id === section.id)
       .map(({ id, title }) => ({ id, title })),
   }))
 }
 
-export function createSection(db: DatabaseSync, name: string): Section {
+/** Creates a section, in the least-used color unless one is given. */
+export function createSection(
+  db: DatabaseSync,
+  name: string,
+  color?: Hue
+): Section {
   try {
     return growing(db, () => {
+      color ??= nextHue(listSections(db).map((section) => section.color))
       const { lastInsertRowid } = db
-        .prepare("INSERT INTO sections (name) VALUES (?)")
-        .run(name)
-      return { id: Number(lastInsertRowid), name }
+        .prepare("INSERT INTO sections (name, color) VALUES (?, ?)")
+        .run(name, color)
+      return { id: Number(lastInsertRowid), name, color }
     })
   } catch (error) {
     translate(error, { [SQLITE_CONSTRAINT_UNIQUE]: "duplicate-section" })
   }
 }
 
-export function renameSection(db: DatabaseSync, id: number, name: string) {
+export function updateSection(
+  db: DatabaseSync,
+  id: number,
+  { name, color }: SectionInput
+) {
   try {
     growing(db, () => {
       const { changes } = db
-        .prepare("UPDATE sections SET name = ? WHERE id = ?")
-        .run(name, id)
+        .prepare("UPDATE sections SET name = ?, color = ? WHERE id = ?")
+        .run(name, color, id)
       if (changes === 0) throw new LibraryError("section-not-found")
     })
   } catch (error) {
@@ -178,12 +201,20 @@ function recipeParams(recipe: RecipeInput) {
 export function getRecipe(db: DatabaseSync, id: number): Recipe | undefined {
   const row = db
     .prepare(
-      `SELECT recipes.*, sections.name AS section_name
+      `SELECT recipes.*, sections.name AS section_name,
+         sections.color AS section_color
        FROM recipes JOIN sections ON sections.id = recipes.section_id
        WHERE recipes.id = ?`
     )
-    .get(id) as (RecipeRow & { section_name: string }) | undefined
-  return row && { ...fromRow(row), sectionName: row.section_name }
+    .get(id) as
+    (RecipeRow & { section_name: string; section_color: string }) | undefined
+  return (
+    row && {
+      ...fromRow(row),
+      sectionName: row.section_name,
+      sectionColor: toHue(row.section_color),
+    }
+  )
 }
 
 /** Inserts a recipe with the given id, or the next free one when null. */
@@ -245,10 +276,20 @@ export interface RecipeSummary {
   id: number
   title: string
   sectionName: string
+  sectionColor: Hue
+  stepCount: number
 }
 
-const SUMMARY_COLUMNS = `recipes.id, recipes.title, sections.name AS sectionName
+const SUMMARY_COLUMNS = `recipes.id, recipes.title, sections.name AS sectionName,
+  sections.color AS sectionColor, json_array_length(recipes.steps) AS stepCount
   FROM recipes JOIN sections ON sections.id = recipes.section_id`
+
+function toSummaries(rows: unknown[]): RecipeSummary[] {
+  return (rows as RecipeSummary[]).map((row) => ({
+    ...row,
+    sectionColor: toHue(row.sectionColor),
+  }))
+}
 
 /** Notes that a recipe was opened, for the recently viewed list. */
 export function recordView(db: DatabaseSync, id: number, at = Date.now()) {
@@ -260,14 +301,15 @@ export function listRecentlyViewed(
   db: DatabaseSync,
   limit: number
 ): RecipeSummary[] {
-  return db
+  const rows = db
     .prepare(
       `SELECT ${SUMMARY_COLUMNS}
        WHERE recipes.viewed_at IS NOT NULL
        ORDER BY recipes.viewed_at DESC, recipes.id DESC
        LIMIT ?`
     )
-    .all(limit) as unknown as RecipeSummary[]
+    .all(limit)
+  return toSummaries(rows)
 }
 
 /** The newest recipes first: each new recipe gets the highest id. */
@@ -275,9 +317,10 @@ export function listRecentlyAdded(
   db: DatabaseSync,
   limit: number
 ): RecipeSummary[] {
-  return db
+  const rows = db
     .prepare(`SELECT ${SUMMARY_COLUMNS} ORDER BY recipes.id DESC LIMIT ?`)
-    .all(limit) as unknown as RecipeSummary[]
+    .all(limit)
+  return toSummaries(rows)
 }
 
 export const BACKUP_FORMAT = "manna-backup"
@@ -291,9 +334,14 @@ export interface Backup {
   recipes: StoredRecipe[]
 }
 
+/** A backup to restore. Ones made before sections had colors lack them. */
+export type RestorableBackup = Omit<Backup, "sections"> & {
+  sections: (Omit<Section, "color"> & { color?: Hue })[]
+}
+
 export function exportLibrary(db: DatabaseSync): Backup {
   const sections = db
-    .prepare("SELECT id, name FROM sections ORDER BY id")
+    .prepare("SELECT id, name, color FROM sections ORDER BY id")
     .all() as unknown as Section[]
   const recipes = db
     .prepare("SELECT * FROM recipes ORDER BY id")
@@ -302,7 +350,10 @@ export function exportLibrary(db: DatabaseSync): Backup {
   return {
     format: BACKUP_FORMAT,
     version: BACKUP_VERSION,
-    sections,
+    sections: sections.map((section) => ({
+      ...section,
+      color: toHue(section.color),
+    })),
     recipes: recipes.map(fromRow),
   }
 }
@@ -311,16 +362,20 @@ export function exportLibrary(db: DatabaseSync): Backup {
  * Replaces the whole library with a backup, keeping its ids so existing
  * links keep working. Nothing changes if any part of the backup is rejected.
  */
-export function restoreLibrary(db: DatabaseSync, backup: Backup) {
+export function restoreLibrary(db: DatabaseSync, backup: RestorableBackup) {
   try {
     transaction(db, () => {
       db.exec("DELETE FROM recipes")
       db.exec("DELETE FROM sections")
       const insertSection = db.prepare(
-        "INSERT INTO sections (id, name) VALUES (?, ?)"
+        "INSERT INTO sections (id, name, color) VALUES (?, ?, ?)"
       )
-      for (const section of backup.sections) {
-        insertSection.run(section.id, section.name)
+      for (const [index, section] of backup.sections.entries()) {
+        insertSection.run(
+          section.id,
+          section.name,
+          section.color ?? hueAt(index)
+        )
       }
       for (const recipe of backup.recipes) insertRecipe(db, recipe, recipe.id)
     })

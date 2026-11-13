@@ -5,20 +5,22 @@ import {
   COLLAPSED_SECTIONS_COOKIE,
   parseCollapsedSections,
 } from "@/lib/collapsed-sections"
+import type { Hue } from "@/lib/hues"
 import { getDatabase } from "@/server/database"
 import { listSections } from "@/server/library"
 
 interface Props {
   title?: string
-  breadcrumb: string[]
+  /** The page's color; Manna's own unless the page belongs to a section. */
+  hue?: Hue
   activeRecipeId?: number
 }
 
-const { title, breadcrumb, activeRecipeId } = Astro.props
+const { title, hue, activeRecipeId } = Astro.props
 const { cookies } = Astro
 ---
 
-<Layout title={title}>
+<Layout title={title} hue={hue}>
   <AppShell
     client:load
     sections={listSections(getDatabase())}
@@ -27,8 +29,9 @@ const { cookies } = Astro
       cookies.get(COLLAPSED_SECTIONS_COOKIE)?.value
     )}
     sidebarOpen={cookies.get("sidebar_state")?.value !== "false"}
-    breadcrumb={breadcrumb}
   >
+    {Astro.slots.has("actions") && <slot name="actions" slot="actions" />}
+    {Astro.slots.has("hero") && <slot name="hero" slot="hero" />}
     <slot />
   </AppShell>
 </Layout>

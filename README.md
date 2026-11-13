@@ -6,13 +6,14 @@ Manna is a simple, fast, self-hosted recipe app. Organize recipes into sections,
 
 ## Features
 
-- **Sections and recipes** in a sidebar: create, rename, and delete sections, and search recipes by title or section. On phones, swipe right to open the sidebar and left to close it.
-- **Home page** with the recipes you opened most recently and the newest ones you added, so the ones you're cooking this week are a tap away.
+- **Sections and recipes** in a sidebar: create, rename, recolor, and delete sections, and search recipes by title or section. On phones, swipe right to open the sidebar and left to close it.
+- **A color for every section**, picked from eight when you create or edit it. Each recipe page, its cook mode, and the sidebar beside it take on its section's color; the home page and Settings use Manna's own orange.
+- **Home page** with the recipes you opened most recently and the newest ones you added, so the ones you're cooking this week are a tap away. If you left cook mode partway through the last recipe you opened, it shows the step you were on, with a button to pick up where you left off.
 - **Recipes** with a description, servings, prep and cook times, a source link, ingredients, steps, and notes. The editor gives each ingredient and step its own row; press Enter for the next ingredient, and paste a whole list to split it into rows.
 - **Import from a link**: paste a recipe page's address on the New recipe page and Manna fills in the form for you to check before saving. It reads the recipe data most recipe sites publish for search engines (schema.org JSON-LD). Some big sites turn away requests that don't come from a browser; copy those recipes in by hand.
-- **Cook mode** shows every step in a scrolling list with the current one centered, like song lyrics. Tap a step to jump to it, or use Previous/Next, the arrow keys, or space. Ingredients sit beside the steps on wide screens and in a drawer on phones. Each device remembers its place. Tap Keep awake in the bottom-left corner to keep the screen on while cooking; it shows when it's on, and tapping again lets the screen sleep. Browsers only allow this over HTTPS or on `localhost`, and Home Screen apps need iOS 18.4 or later.
+- **Cook mode** shows every step over a gradient in the section's color, in a scrolling list with the current one centered, like song lyrics. Tap a step to jump to it, or use Previous/Next, the arrow keys, or space. Ingredients sit beside the steps on wide screens and in a drawer on phones. Each device remembers its place. Tap Keep awake, beside Previous, to keep the screen on while cooking; it shows when it's on, and tapping again lets the screen sleep. Browsers only allow this over HTTPS or on `localhost`, and Home Screen apps need iOS 18.4 or later.
 - **Light and dark themes**: follow the device, or pick one in Settings. Each device remembers its choice.
-- **Backups** from Settings: export the whole library as JSON, or restore a backup to replace everything (ids are kept, so links keep working). Backups are limited to 16 MB, thousands of typical recipes; the app refuses a change that would make the library too big to restore.
+- **Backups** from Settings: export the whole library as JSON, or restore a backup to replace everything (ids are kept, so links keep working). Backups from before sections had colors still restore; their sections take turns through the colors. Backups are limited to 16 MB, thousands of typical recipes; the app refuses a change that would make the library too big to restore.
 
 ## Self-hosting
 

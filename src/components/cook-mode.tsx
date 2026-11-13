@@ -31,6 +31,7 @@ import {
 import { Item, ItemContent } from "@/components/ui/item"
 import { Progress } from "@/components/ui/progress"
 import { Toaster } from "@/components/ui/sonner"
+import { savedStep, saveStep } from "@/lib/cook-progress"
 import {
   canKeepScreenAwake,
   screenWakeLock,
@@ -48,8 +49,8 @@ type CookRecipe = Pick<Recipe, "id" | "title" | "ingredients" | "steps">
  */
 export function CookMode({ recipe }: { recipe: CookRecipe }) {
   const { steps, ingredients } = recipe
-  const [current, setCurrent] = useState(() =>
-    savedStep(recipe.id, steps.length)
+  const [current, setCurrent] = useState(
+    () => savedStep(recipe.id, steps.length) ?? 0
   )
   const [currentInView, setCurrentInView] = useState(true)
   const scroller = useRef<HTMLElement>(null)
@@ -114,25 +115,29 @@ export function CookMode({ recipe }: { recipe: CookRecipe }) {
 
   const recipeHref = `/recipes/${recipe.id}`
   const ingredientList = (
-    <ul className="ml-6 list-disc marker:text-primary [&>li]:mt-2">
+    <ul className="divide-y border-t">
       {ingredients.map((ingredient, index) => (
-        <li key={index}>{ingredient}</li>
+        <li key={index} className="py-3 font-medium">
+          {ingredient}
+        </li>
       ))}
     </ul>
   )
 
   return (
-    <div className="flex h-svh flex-col">
-      <header className="sticky top-0 z-10 flex items-center gap-3 bg-background px-4 pt-3">
+    <div className="flex h-svh flex-col surface-cook">
+      <header className="z-10 flex items-center gap-3 px-4 pt-3 md:px-6 md:pt-5">
         <a
           href={recipeHref}
-          className={cn(buttonVariants({ variant: "ghost", size: "icon" }))}
+          className={cn(
+            buttonVariants({ variant: "secondary", size: "icon-lg" })
+          )}
           aria-label="Exit cook mode"
         >
           <IconX />
         </a>
         <div className="flex min-w-0 flex-1 flex-col">
-          <h1 className="truncate font-heading text-lg">{recipe.title}</h1>
+          <h1 className="truncate font-semibold md:text-lg">{recipe.title}</h1>
           <p className="text-sm text-muted-foreground">
             {steps.length === 0
               ? "No steps"
@@ -144,7 +149,9 @@ export function CookMode({ recipe }: { recipe: CookRecipe }) {
         {ingredients.length > 0 && (
           <Drawer>
             <DrawerTrigger
-              render={<Button variant="outline" className="lg:hidden" />}
+              render={
+                <Button variant="secondary" size="lg" className="lg:hidden" />
+              }
             >
               <IconBasket />
               Ingredients
@@ -161,17 +168,15 @@ export function CookMode({ recipe }: { recipe: CookRecipe }) {
       <Progress
         value={steps.length === 0 ? 0 : (current / steps.length) * 100}
         aria-label="Progress"
-        className="px-4 py-3"
+        className="px-4 py-3 md:px-6 [&_[data-slot=progress-track]]:h-1.5"
       />
-      <div className="flex min-h-0 flex-1">
-        {ingredients.length > 0 && (
-          <aside className="hidden w-80 shrink-0 overflow-y-auto border-r p-6 lg:block">
-            <h2 className="mb-3 font-heading text-xl">Ingredients</h2>
-            {ingredientList}
-          </aside>
-        )}
+      <div className="flex min-h-0 flex-1 gap-6 lg:px-6">
         <div className="relative flex min-h-0 flex-1 flex-col">
-          <main ref={scroller} className="min-h-0 flex-1 overflow-y-auto">
+          {/* Steps fade out toward the top and bottom edges. */}
+          <main
+            ref={scroller}
+            className="min-h-0 flex-1 overflow-y-auto [mask-image:linear-gradient(transparent,black_12%,black_88%,transparent)]"
+          >
             {steps.length === 0 ? (
               <Empty className="h-full">
                 <EmptyHeader>
@@ -202,7 +207,7 @@ export function CookMode({ recipe }: { recipe: CookRecipe }) {
                   </EmptyDescription>
                 </EmptyHeader>
                 <EmptyContent className="flex-row justify-center">
-                  <Button variant="outline" onClick={() => go(0)}>
+                  <Button variant="secondary" onClick={() => go(0)}>
                     Start over
                   </Button>
                   <a href={recipeHref} className={cn(buttonVariants())}>
@@ -211,7 +216,7 @@ export function CookMode({ recipe }: { recipe: CookRecipe }) {
                 </EmptyContent>
               </Empty>
             ) : (
-              <ol className="mx-auto flex max-w-3xl flex-col gap-2 px-4 py-[40svh]">
+              <ol className="mx-auto flex max-w-4xl flex-col gap-4 px-2 py-[40svh] md:gap-6 md:px-4">
                 {steps.map((step, index) => (
                   <li key={index}>
                     <Item
@@ -226,14 +231,13 @@ export function CookMode({ recipe }: { recipe: CookRecipe }) {
                         />
                       }
                       className={cn(
-                        "text-left font-heading text-3xl leading-snug transition-opacity md:text-4xl",
-                        index < current && "opacity-30",
-                        index > current && "opacity-60"
+                        "text-left type-display text-3xl leading-[1.12] transition-opacity hover:bg-transparent md:text-5xl",
+                        index !== current && "opacity-35 hover:opacity-60"
                       )}
                     >
                       <ItemContent className="block whitespace-pre-line">
                         {/* Steps read like verses: a small number, then the text. */}
-                        <span className="mr-3 align-super font-sans text-sm font-medium text-primary tabular-nums">
+                        <span className="mr-2 align-super font-sans text-sm font-bold tracking-normal tabular-nums opacity-80 md:mr-3">
                           {index + 1}
                         </span>
                         {step}
@@ -246,7 +250,6 @@ export function CookMode({ recipe }: { recipe: CookRecipe }) {
           </main>
           {!done && !currentInView && (
             <Button
-              variant="secondary"
               className="absolute bottom-4 left-1/2 -translate-x-1/2"
               onClick={scrollToCurrent}
             >
@@ -254,14 +257,23 @@ export function CookMode({ recipe }: { recipe: CookRecipe }) {
             </Button>
           )}
         </div>
+        {ingredients.length > 0 && (
+          <aside className="my-6 hidden max-h-[calc(100%-3rem)] w-80 shrink-0 self-center overflow-y-auto rounded-3xl bg-secondary p-6 pb-3 backdrop-blur-md lg:block">
+            <h2 className="mb-2 font-semibold">Ingredients</h2>
+            {ingredientList}
+          </aside>
+        )}
       </div>
       {steps.length > 0 && (
-        <footer className="flex gap-2 p-4">
+        <footer className="flex items-center gap-2 p-4 md:px-6 md:pb-6">
+          <p className="mr-auto hidden text-sm text-muted-foreground lg:block">
+            Press space or the arrow keys to move between steps.
+          </p>
           {keepAwake.supported && (
             <Button
               size="lg"
-              variant="outline"
-              className="size-12 md:w-auto"
+              variant="secondary"
+              className="size-12 md:w-auto md:px-5"
               aria-label="Keep awake"
               aria-pressed={keepAwake.on}
               onClick={async () => {
@@ -281,8 +293,8 @@ export function CookMode({ recipe }: { recipe: CookRecipe }) {
           )}
           <Button
             size="lg"
-            variant="outline"
-            className="h-12 flex-1 sm:ml-auto sm:flex-none"
+            variant="secondary"
+            className="h-12 flex-1 sm:ml-auto sm:flex-none sm:px-6 lg:ml-0"
             disabled={current === 0}
             onClick={() => go(current - 1)}
           >
@@ -292,7 +304,7 @@ export function CookMode({ recipe }: { recipe: CookRecipe }) {
           {!done && (
             <Button
               size="lg"
-              className="h-12 flex-1 sm:flex-none"
+              className="h-12 flex-1 sm:flex-none sm:px-8"
               onClick={() => go(current + 1)}
             >
               {current === steps.length - 1 ? "Finish" : "Next"}
@@ -311,29 +323,6 @@ export function CookMode({ recipe }: { recipe: CookRecipe }) {
       />
     </div>
   )
-}
-
-// Each device remembers the step it was on, per recipe, until the recipe is
-// finished. Storage can be unavailable (private browsing), so failures just
-// mean starting from the first step.
-const storageKey = (recipeId: number) => `cook-step:${recipeId}`
-
-function savedStep(recipeId: number, stepCount: number): number {
-  try {
-    const step = Number(localStorage.getItem(storageKey(recipeId)))
-    return Number.isInteger(step) && step >= 0 && step < stepCount ? step : 0
-  } catch {
-    return 0
-  }
-}
-
-function saveStep(recipeId: number, step: number | undefined) {
-  try {
-    if (step === undefined) localStorage.removeItem(storageKey(recipeId))
-    else localStorage.setItem(storageKey(recipeId), String(step))
-  } catch {
-    // Not remembering the step is harmless.
-  }
 }
 
 /**
