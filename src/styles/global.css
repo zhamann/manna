@@ -8,6 +8,7 @@
 @theme inline {
     --font-heading: 'Instrument Sans Variable', sans-serif;
     --font-sans: 'Instrument Sans Variable', sans-serif;
+    --color-canvas: var(--canvas);
     --color-swatch: var(--swatch);
     --color-sidebar-ring: var(--sidebar-ring);
     --color-sidebar-border: var(--sidebar-border);
@@ -233,7 +234,7 @@
     --ring: rgb(255 255 255 / 60%);
 }
 
-/* The hue's soft gradient, behind the sidebar and the phone page headers. */
+/* The hue's soft gradient, behind the sidebar. */
 @utility surface-canvas {
     background-color: var(--canvas);
     background-image:
@@ -242,10 +243,28 @@
         radial-gradient(26rem 30rem at 20rem 46%, var(--canvas-mid), transparent 70%);
 }
 
-/* The hue's dark gradient behind cook mode. */
+/*
+ * The same gradient behind a phone page's title, starting from solid canvas
+ * so it runs on from the toolbar above it. iOS paints the status bar in the
+ * toolbar's one color, so the gradient can't reach the top of the screen.
+ */
+@utility surface-hero {
+    background-color: var(--canvas);
+    background-image:
+        linear-gradient(var(--canvas), transparent 6rem),
+        radial-gradient(30rem 28rem at 0 0, var(--canvas-glow), transparent 72%),
+        radial-gradient(38rem 34rem at 2rem 100%, var(--canvas-warm), transparent 72%),
+        radial-gradient(26rem 30rem at 20rem 46%, var(--canvas-mid), transparent 70%);
+}
+
+/*
+ * The hue's dark gradient behind cook mode. Its top is solid night, the color
+ * of the header, which iOS carries up into the status bar.
+ */
 @utility surface-cook {
     background-color: var(--hue-dusk);
     background-image:
+        linear-gradient(var(--hue-night) 5rem, transparent 12rem),
         radial-gradient(62% 85% at 12% 18%, var(--hue-ember), transparent 70%),
         radial-gradient(55% 75% at 88% 12%, var(--hue-night), transparent 70%),
         radial-gradient(70% 85% at 72% 95%, var(--hue-smoke), transparent 70%),
@@ -270,12 +289,19 @@
     @apply surface-canvas bg-fixed;
 }
 
+/* The phone sidebar takes focus itself when it opens; it needs no ring. */
+[data-slot="sidebar"][data-mobile="true"] {
+    @apply outline-hidden;
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
     }
+  /* Canvas, not white: iOS shows it in the status bar wherever no bar is
+     pinned at the top, such as over the open sidebar. */
   body {
-    @apply bg-background text-foreground;
+    @apply bg-canvas text-foreground;
     }
   html {
     @apply font-sans;

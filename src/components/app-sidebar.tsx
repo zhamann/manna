@@ -27,9 +27,21 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar"
 import { storeCollapsedSections } from "@/lib/collapsed-sections"
-import { APP_HUE, nextHue } from "@/lib/hues"
+import { nextHue } from "@/lib/hues"
 import { filterSections } from "@/lib/search"
 import type { SectionWithRecipes } from "@/server/library"
+
+/**
+ * Focuses the phone sidebar's panel when it opens. Left alone, Base UI focuses
+ * the first link, the logo, and shows its focus ring; it focuses the panel
+ * instead only for a touch on its own trigger, and the sidebar opens from our
+ * toggle or a swipe. Runs as the header mounts, ahead of Base UI.
+ */
+function focusMobilePanel(header: HTMLDivElement | null) {
+  header
+    ?.closest<HTMLElement>('[data-slot="sidebar"][data-mobile="true"]')
+    ?.focus({ preventScroll: true })
+}
 
 export function AppSidebar({
   sections,
@@ -64,7 +76,7 @@ export function AppSidebar({
 
   return (
     <Sidebar variant="inset">
-      <SidebarHeader>
+      <SidebarHeader ref={focusMobilePanel}>
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton
@@ -72,11 +84,7 @@ export function AppSidebar({
               className="gap-3 px-2"
               render={<a href="/" />}
             >
-              {/* The logo always wears Manna's own color. */}
-              <div
-                data-hue={APP_HUE}
-                className="flex aspect-square size-9 items-center justify-center rounded-xl bg-sidebar-primary text-sidebar-primary-foreground"
-              >
+              <div className="flex aspect-square size-9 items-center justify-center rounded-xl bg-sidebar-primary text-sidebar-primary-foreground">
                 <MannaMark className="size-5" />
               </div>
               <span className="type-display text-xl">Manna</span>
