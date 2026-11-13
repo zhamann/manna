@@ -1,18 +1,27 @@
 ---
 import "@/styles/global.css"
+import { APP_HUE, type Hue } from "@/lib/hues"
 import { parseTheme, THEME_COOKIE } from "@/lib/theme"
 
 interface Props {
   title?: string
-  /** Always use the dark theme instead of the one picked in Settings. */
-  dark?: boolean
+  /** The page's color: its section's, or Manna's own by default. */
+  hue?: Hue
+  /** Cook mode: always dark, over the hue's gradient. */
+  cook?: boolean
 }
 
-const { title, dark = false } = Astro.props
-const theme = dark ? "dark" : parseTheme(Astro.cookies.get(THEME_COOKIE)?.value)
+const { title, hue = APP_HUE, cook = false } = Astro.props
+const theme = cook ? "dark" : parseTheme(Astro.cookies.get(THEME_COOKIE)?.value)
 ---
 
-<html lang="en" data-theme={theme} class:list={{ dark: theme === "dark" }}>
+<html
+  lang="en"
+  data-theme={theme}
+  data-hue={hue}
+  data-cook={cook ? "" : undefined}
+  class:list={{ dark: theme === "dark" }}
+>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />

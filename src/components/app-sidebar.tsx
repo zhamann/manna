@@ -1,9 +1,4 @@
-import {
-  IconFolderPlus,
-  IconMinus,
-  IconPlus,
-  IconSettings,
-} from "@tabler/icons-react"
+import { IconFolderPlus, IconPlus, IconSettings } from "@tabler/icons-react"
 import * as React from "react"
 
 import { MannaMark } from "@/components/manna-mark"
@@ -23,6 +18,7 @@ import {
   SidebarGroup,
   SidebarHeader,
   SidebarMenu,
+  SidebarMenuBadge,
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarMenuSub,
@@ -31,6 +27,7 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar"
 import { storeCollapsedSections } from "@/lib/collapsed-sections"
+import { APP_HUE, nextHue } from "@/lib/hues"
 import { filterSections } from "@/lib/search"
 import type { SectionWithRecipes } from "@/server/library"
 
@@ -56,7 +53,6 @@ export function AppSidebar({
   const searching = query.trim() !== ""
   const visibleSections = filterSections(sections, query)
   const recipeCounts = new Map(sections.map((s) => [s.id, s.recipes.length]))
-  const recipeCount = sections.reduce((n, s) => n + s.recipes.length, 0)
 
   function setSectionOpen(id: number, open: boolean) {
     const next = new Set(collapsed)
@@ -67,24 +63,23 @@ export function AppSidebar({
   }
 
   return (
-    <Sidebar>
+    <Sidebar variant="inset">
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton
               size="lg"
-              className="gap-3"
+              className="gap-3 px-2"
               render={<a href="/" />}
             >
-              <div className="flex aspect-square size-10 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
-                <MannaMark className="size-6" />
+              {/* The logo always wears Manna's own color. */}
+              <div
+                data-hue={APP_HUE}
+                className="flex aspect-square size-9 items-center justify-center rounded-xl bg-sidebar-primary text-sidebar-primary-foreground"
+              >
+                <MannaMark className="size-5" />
               </div>
-              <div className="flex flex-col gap-1.5">
-                <span className="font-heading text-lg/none">Manna</span>
-                <span className="text-xs/none text-muted-foreground">
-                  {recipeCount} {recipeCount === 1 ? "recipe" : "recipes"}
-                </span>
-              </div>
+              <span className="type-display text-xl">Manna</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
@@ -110,11 +105,20 @@ export function AppSidebar({
                   className="group/collapsible"
                 >
                   <SidebarMenuItem>
-                    <SidebarMenuButton render={<CollapsibleTrigger />}>
+                    <SidebarMenuButton
+                      className="gap-2.5 font-semibold"
+                      render={<CollapsibleTrigger />}
+                    >
+                      <span
+                        data-hue={section.color}
+                        className="size-2.5 shrink-0 rounded-full bg-swatch ring-2 ring-sidebar-accent"
+                      />
                       <span className="truncate">{section.name}</span>
-                      <IconPlus className="ml-auto group-aria-expanded/menu-button:hidden" />
-                      <IconMinus className="ml-auto hidden group-aria-expanded/menu-button:block" />
                     </SidebarMenuButton>
+                    {/* Makes way for the actions button, which shows on hover. */}
+                    <SidebarMenuBadge className="opacity-60 max-md:hidden md:group-focus-within/menu-item:opacity-0 md:group-hover/menu-item:opacity-0 md:group-has-[[data-sidebar=menu-action][aria-expanded=true]]/menu-item:opacity-0">
+                      {recipeCounts.get(section.id)}
+                    </SidebarMenuBadge>
                     <SectionActions
                       section={section}
                       recipeCount={recipeCounts.get(section.id) ?? 0}
@@ -162,7 +166,10 @@ export function AppSidebar({
       <SidebarFooter>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SectionDialog trigger={<SidebarMenuButton />}>
+            <SectionDialog
+              trigger={<SidebarMenuButton />}
+              color={nextHue(sections.map((section) => section.color))}
+            >
               <IconFolderPlus />
               <span>New section</span>
             </SectionDialog>

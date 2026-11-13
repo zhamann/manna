@@ -13,7 +13,7 @@ recordView(getDatabase(), recipe.id)
 const { title, ingredients, steps } = recipe
 ---
 
-<Layout title={title} dark>
+<Layout title={title} hue={recipe.sectionColor} cook>
   <CookMode
     client:only="react"
     recipe={{ id: recipe.id, title, ingredients, steps }}

@@ -1,11 +1,14 @@
 import { describe, expect, it } from "vitest"
 
+import type { SectionWithRecipes } from "@/server/library"
+
 import { filterSections } from "./search"
 
-const sections = [
+const sections: SectionWithRecipes[] = [
   {
     id: 1,
     name: "Baking",
+    color: "orange",
     recipes: [
       { id: 1, title: "Banana bread" },
       { id: 2, title: "Scones" },
@@ -14,6 +17,7 @@ const sections = [
   {
     id: 2,
     name: "Dinner",
+    color: "blue",
     recipes: [
       { id: 3, title: "Banh mi" },
       { id: 4, title: "Risotto" },

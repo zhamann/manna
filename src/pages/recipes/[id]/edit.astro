@@ -10,15 +10,25 @@ const id = parseId(Astro.params.id)
 const recipe = id && getRecipe(db, id)
 if (!recipe) return Astro.rewrite("/404")
 
-const sections = listSections(db).map(({ id, name }) => ({ id, name }))
+const sections = listSections(db).map(({ id, name, color }) => ({
+  id,
+  name,
+  color,
+}))
 ---
 
 <AppLayout
   title={`Edit ${recipe.title}`}
-  breadcrumb={[recipe.sectionName, recipe.title, "Edit"]}
+  hue={recipe.sectionColor}
   activeRecipeId={recipe.id}
 >
-  <div class="mx-auto w-full max-w-2xl p-4 md:p-8">
+  <div
+    slot="hero"
+    class="mx-auto w-full max-w-3xl px-5 pt-2 pb-8 md:px-10 md:pt-6 md:pb-10"
+  >
+    <h1 class="type-display text-5xl leading-none md:text-6xl">Edit recipe</h1>
+  </div>
+  <div class="mx-auto w-full max-w-3xl px-5 pt-6 pb-16 md:px-10 md:pt-0">
     <RecipeForm client:load sections={sections} recipe={recipe} />
   </div>
 </AppLayout>

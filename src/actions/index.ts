@@ -15,12 +15,13 @@ import {
   deleteRecipe,
   deleteSection,
   LibraryError,
-  renameSection,
   restoreLibrary,
   updateRecipe,
+  updateSection,
   type LibraryErrorCode,
 } from "@/server/library"
 import { RECIPE_LIMITS } from "@/server/limits"
+import { HUES } from "@/lib/hues"
 
 const libraryErrors: Record<
   LibraryErrorCode,
@@ -100,6 +101,7 @@ const sectionName = z
   .trim()
   .min(1, "Enter a name.")
   .max(100, "Keep it under 100 characters.")
+const color = z.enum(HUES, "Pick a color.")
 
 const text = (max: number) =>
   z
@@ -154,7 +156,9 @@ const backup = z
       BACKUP_VERSION,
       "This backup is from a newer version of the app."
     ),
-    sections: z.array(z.object({ id, name: sectionName })),
+    sections: z.array(
+      z.object({ id, name: sectionName, color: color.optional() })
+    ),
     recipes: z.array(recipe.extend({ id })),
   })
   .refine(
@@ -179,12 +183,14 @@ export const server = {
     },
   }),
   createSection: defineAction({
-    input: z.object({ name: sectionName }),
-    handler: ({ name }) => library((db) => createSection(db, name)),
+    input: z.object({ name: sectionName, color }),
+    handler: ({ name, color }) =>
+      library((db) => createSection(db, name, color)),
   }),
-  renameSection: defineAction({
-    input: z.object({ id, name: sectionName }),
-    handler: ({ id, name }) => library((db) => renameSection(db, id, name)),
+  updateSection: defineAction({
+    input: z.object({ id, name: sectionName, color }),
+    handler: ({ id, ...section }) =>
+      library((db) => updateSection(db, id, section)),
   }),
   deleteSection: defineAction({
     input: z.object({ id }),

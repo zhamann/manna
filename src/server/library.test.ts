@@ -15,12 +15,13 @@ import {
   listRecentlyViewed,
   listSections,
   recordView,
-  renameSection,
   restoreLibrary,
   updateRecipe,
+  updateSection,
   type RecipeInput,
 } from "./library"
 import { BACKUP_SIZE_LIMIT } from "./limits"
+import { HUES } from "@/lib/hues"
 
 let db: DatabaseSync
 
@@ -55,8 +56,8 @@ function errorCode(run: () => unknown) {
 
 describe("sections", () => {
   it("lists sections and their recipes alphabetically", () => {
-    const mains = createSection(db, "mains")
-    const baking = createSection(db, "Baking")
+    const mains = createSection(db, "mains", "teal")
+    const baking = createSection(db, "Baking", "honey")
     createRecipe(db, recipe(baking.id, "scones"))
     createRecipe(db, recipe(baking.id, "Banana bread"))
 
@@ -64,12 +65,13 @@ describe("sections", () => {
       {
         id: baking.id,
         name: "Baking",
+        color: "honey",
         recipes: [
           { id: expect.any(Number), title: "Banana bread" },
           { id: expect.any(Number), title: "scones" },
         ],
       },
-      { id: mains.id, name: "mains", recipes: [] },
+      { id: mains.id, name: "mains", color: "teal", recipes: [] },
     ])
   })
 
@@ -80,16 +82,32 @@ describe("sections", () => {
     expect(errorCode(() => createSection(db, "baking"))).toBe(
       "duplicate-section"
     )
-    expect(errorCode(() => renameSection(db, other.id, "BAKING"))).toBe(
-      "duplicate-section"
-    )
+    expect(
+      errorCode(() =>
+        updateSection(db, other.id, { name: "BAKING", color: "blue" })
+      )
+    ).toBe("duplicate-section")
   })
 
-  it("renames a section", () => {
-    const section = createSection(db, "Baking")
-    renameSection(db, section.id, "Breads")
+  it("renames and recolors a section", () => {
+    const section = createSection(db, "Baking", "orange")
+    updateSection(db, section.id, { name: "Breads", color: "violet" })
 
-    expect(listSections(db).map(({ name }) => name)).toEqual(["Breads"])
+    expect(listSections(db)).toMatchObject([
+      { name: "Breads", color: "violet" },
+    ])
+  })
+
+  it("gives new sections the colors no other section uses yet", () => {
+    createSection(db, "First", HUES[1])
+    createSection(db, "Second")
+    createSection(db, "Third")
+
+    expect(listSections(db).map(({ color }) => color)).toEqual([
+      HUES[1],
+      HUES[0],
+      HUES[2],
+    ])
   })
 
   it("deletes only empty sections", () => {
@@ -106,16 +124,16 @@ describe("sections", () => {
   })
 
   it("reports missing sections", () => {
-    expect(errorCode(() => renameSection(db, 99, "Nope"))).toBe(
-      "section-not-found"
-    )
+    expect(
+      errorCode(() => updateSection(db, 99, { name: "Nope", color: "blue" }))
+    ).toBe("section-not-found")
     expect(errorCode(() => deleteSection(db, 99))).toBe("section-not-found")
   })
 })
 
 describe("recipes", () => {
   it("round-trips every field", () => {
-    const section = createSection(db, "Baking")
+    const section = createSection(db, "Baking", "rose")
     const input = {
       ...recipe(section.id, "Scones"),
       description: "Flaky.",
@@ -129,6 +147,7 @@ describe("recipes", () => {
       ...input,
       id,
       sectionName: "Baking",
+      sectionColor: "rose",
     })
   })
 
@@ -176,23 +195,35 @@ describe("recipes", () => {
 
 describe("recent recipes", () => {
   it("lists recipes by when they were last viewed", () => {
-    const baking = createSection(db, "Baking")
-    const mains = createSection(db, "Mains")
+    const baking = createSection(db, "Baking", "orange")
+    const mains = createSection(db, "Mains", "green")
     const scones = createRecipe(db, recipe(baking.id, "Scones"))
-    const stew = createRecipe(db, recipe(mains.id, "Stew"))
+    const stew = createRecipe(db, {
+      ...recipe(mains.id, "Stew"),
+      steps: ["Brown.", "Simmer.", "Season."],
+    })
     createRecipe(db, recipe(mains.id, "Never opened"))
 
     recordView(db, scones, 1000)
     recordView(db, stew, 2000)
-    expect(listRecentlyViewed(db, 10)).toEqual([
-      { id: stew, title: "Stew", sectionName: "Mains" },
-      { id: scones, title: "Scones", sectionName: "Baking" },
-    ])
+    const stewSummary = {
+      id: stew,
+      title: "Stew",
+      sectionName: "Mains",
+      sectionColor: "green",
+      stepCount: 3,
+    }
+    const sconesSummary = {
+      id: scones,
+      title: "Scones",
+      sectionName: "Baking",
+      sectionColor: "orange",
+      stepCount: 2,
+    }
+    expect(listRecentlyViewed(db, 10)).toEqual([stewSummary, sconesSummary])
 
     recordView(db, scones, 3000)
-    expect(listRecentlyViewed(db, 1)).toEqual([
-      { id: scones, title: "Scones", sectionName: "Baking" },
-    ])
+    expect(listRecentlyViewed(db, 1)).toEqual([sconesSummary])
   })
 
   it("lists the newest recipes first", () => {
@@ -267,6 +298,21 @@ describe("backups", () => {
       "section-not-found"
     )
     expect(exportLibrary(db)).toEqual(before)
+  })
+
+  it("colors sections from backups made before sections had colors", () => {
+    restoreLibrary(db, {
+      ...exportLibrary(db),
+      sections: [
+        { id: 1, name: "Baking" },
+        { id: 2, name: "Mains" },
+      ],
+    })
+
+    expect(listSections(db).map(({ color }) => color)).toEqual([
+      HUES[0],
+      HUES[1],
+    ])
   })
 
   it("rejects sections whose names collide", () => {

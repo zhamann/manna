@@ -1,8 +1,8 @@
 ---
 import { IconPlus } from "@tabler/icons-react"
 
+import { CookProgress } from "@/components/cook-progress"
 import { MannaMark } from "@/components/manna-mark"
-import { RecipeList } from "@/components/recipe-list"
 import { NewSectionButton } from "@/components/section-dialog"
 import { cn } from "cn"
 
@@ -23,27 +23,100 @@ import {
   listSections,
 } from "@/server/library"
 
-const RECENT_LIMIT = 6
-
 const db = getDatabase()
 const hasSections = listSections(db).length > 0
-const lists = [
-  { title: "Recently viewed", recipes: listRecentlyViewed(db, RECENT_LIMIT) },
-  { title: "Recently added", recipes: listRecentlyAdded(db, RECENT_LIMIT) },
-].filter((list) => list.recipes.length > 0)
+// One big tile for the last recipe opened, then up to four small ones.
+const [lastViewed, ...viewed] = listRecentlyViewed(db, 5)
+const added = listRecentlyAdded(db, 6)
 ---
 
-<AppLayout breadcrumb={["Recipes"]}>
-  {lists.length > 0 ? (
-    <div class="@container mx-auto flex w-full max-w-5xl flex-col gap-8 p-4 md:p-8">
-      <h1 class="font-heading text-4xl leading-tight md:text-5xl">
+<AppLayout>
+  {hasSections && (
+    <a
+      slot="actions"
+      href="/recipes/new"
+      class={cn(buttonVariants({ variant: "default" }))}
+    >
+      <IconPlus />
+      New recipe
+    </a>
+  )}
+  {added.length > 0 && (
+    <div
+      slot="hero"
+      class="mx-auto w-full max-w-5xl px-5 pt-2 pb-8 md:px-10 md:pt-6 md:pb-10"
+    >
+      <h1 class="type-display text-5xl leading-none md:text-7xl">
         What's cooking?
       </h1>
-      <div class="grid gap-8 @3xl:grid-cols-2">
-        {lists.map((list) => (
-          <RecipeList title={list.title} recipes={list.recipes} />
-        ))}
-      </div>
+    </div>
+  )}
+  {added.length > 0 ? (
+    <div class="@container mx-auto flex w-full max-w-5xl flex-col gap-10 px-5 pt-6 pb-16 md:px-10 md:pt-0">
+      {lastViewed && (
+        <section class="flex flex-col gap-3">
+          <h2 class="font-semibold">Recently viewed</h2>
+          <div class="grid grid-cols-2 gap-3 @3xl:auto-rows-[9rem] @3xl:grid-cols-4">
+            <div
+              data-hue={lastViewed.sectionColor}
+              class="relative col-span-2 flex min-h-44 flex-col justify-between gap-6 rounded-3xl bg-secondary p-5 text-secondary-foreground @3xl:row-span-2 @3xl:p-7"
+            >
+              <p class="flex items-center gap-2 text-sm font-semibold">
+                <span class="size-2 rounded-full bg-swatch" />
+                {lastViewed.sectionName}
+              </p>
+              <a
+                href={`/recipes/${lastViewed.id}`}
+                class="type-display text-4xl leading-[0.95] text-balance after:absolute after:inset-0 after:rounded-3xl @3xl:text-6xl"
+              >
+                {lastViewed.title}
+              </a>
+              <CookProgress
+                client:load
+                recipeId={lastViewed.id}
+                stepCount={lastViewed.stepCount}
+              />
+            </div>
+            {viewed.map((recipe) => (
+              <a
+                href={`/recipes/${recipe.id}`}
+                data-hue={recipe.sectionColor}
+                class="flex min-h-28 flex-col justify-between gap-4 rounded-3xl bg-secondary p-4 text-secondary-foreground transition-transform hover:-translate-y-0.5 @3xl:p-5"
+              >
+                <span class="flex min-w-0 items-center gap-2 text-sm font-semibold">
+                  <span class="size-2 shrink-0 rounded-full bg-swatch" />
+                  <span class="truncate">{recipe.sectionName}</span>
+                </span>
+                <span class="line-clamp-2 text-xl leading-tight font-semibold tracking-tight">
+                  {recipe.title}
+                </span>
+              </a>
+            ))}
+          </div>
+        </section>
+      )}
+      <section class="flex flex-col gap-3">
+        <h2 class="font-semibold">Recently added</h2>
+        <ul class="grid gap-x-10 @3xl:grid-cols-2">
+          {added.map((recipe) => (
+            <li class="border-t">
+              <a
+                href={`/recipes/${recipe.id}`}
+                class="flex h-13 items-center gap-3 font-semibold hover:underline hover:underline-offset-4"
+              >
+                <span
+                  data-hue={recipe.sectionColor}
+                  class="size-2 shrink-0 rounded-full bg-swatch"
+                />
+                <span class="truncate">{recipe.title}</span>
+                <span class="ml-auto shrink-0 text-sm font-normal text-muted-foreground">
+                  {recipe.sectionName}
+                </span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </section>
     </div>
   ) : (
     <Empty className="flex-1">
@@ -51,21 +124,12 @@ const lists = [
         <EmptyMedia variant="icon">
           <MannaMark />
         </EmptyMedia>
-        {hasSections ? (
-          <>
-            <EmptyTitle>No recipes yet</EmptyTitle>
-            <EmptyDescription>
-              Add your first recipe, or import one from a link.
-            </EmptyDescription>
-          </>
-        ) : (
-          <>
-            <EmptyTitle>No recipes yet</EmptyTitle>
-            <EmptyDescription>
-              Start by creating a section, like Baking or Weeknight dinners.
-            </EmptyDescription>
-          </>
-        )}
+        <EmptyTitle>No recipes yet</EmptyTitle>
+        <EmptyDescription>
+          {hasSections
+            ? "Add your first recipe, or import one from a link."
+            : "Start by creating a section, like Baking or Weeknight dinners."}
+        </EmptyDescription>
       </EmptyHeader>
       <EmptyContent>
         {hasSections ? (

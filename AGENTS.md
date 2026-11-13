@@ -21,9 +21,9 @@ Manna is a simple, fast, self-hosted recipe app. Recipes live in sections shown 
 - App components compose shadcn components. Their own classes are limited to layout, spacing, and text size; no hand-built controls, menus, dialogs, or one-off colors.
 - To style a link as a button, use `cn(buttonVariants({ ... }))`. `buttonVariants` alone doesn't resolve conflicting classes, so variants like `outline` lose their border.
 - Theme changes belong in `src/styles/global.css` as tokens.
-- The look is an olive grove: olive-leaf primary in light mode, olive-oil gold on a dark olive background in dark mode and cook mode. Use theme tokens (`primary`, `muted-foreground`, …), never raw colors.
-- Display text (recipe titles, page and section headings, the wordmark, cook-mode steps) uses `font-heading` (Cardo); everything else uses the default sans.
-- The logo is `src/components/manna-mark.tsx` and is mirrored in `public/favicon.svg` and the home-screen icon `src/assets/apple-touch-icon.svg` (rendered to `public/apple-touch-icon.png`; the command is in the file); keep them in sync.
+- The look is color on white: each page sits on a white card beside a sidebar in its hue's soft gradient. Every section has a hue (`src/lib/hues.ts`), and orange is Manna's own, used where no section applies. Set `data-hue` on an element and the theme tokens inside it (`primary`, `secondary`, `sidebar`, `swatch`, …) take that hue; pages pass theirs to the layout. Buttons are the hue's deep shade, pale fills (chips, panels, tiles) are `secondary`, and small marks (dots) are `swatch`. Cook mode is always dark, over the hue's gradient (`surface-cook`), with frosted `secondary` controls. Use theme tokens, never raw colors.
+- Everything is set in Instrument Sans. Big display text (page and recipe titles, the wordmark, cook-mode steps) adds the `type-display` utility for its weight, width, and tight tracking.
+- The logo is `src/components/manna-mark.tsx`, drawn in orange's tint on its deep shade, and is mirrored in `public/favicon.svg` and the home-screen icon `src/assets/apple-touch-icon.svg` (rendered to `public/apple-touch-icon.png`; the command is in the file); keep them in sync.
 - Mutations are Astro Actions in `src/actions/`; they validate input with `astro/zod` and map `LibraryError` codes to user-facing messages. After a successful mutation the client reloads or navigates, so pages always render from the database.
 - Every screen must work at phone, tablet, and desktop widths.
 
