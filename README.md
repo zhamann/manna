@@ -10,7 +10,7 @@ Manna is a simple, fast, self-hosted recipe app. Organize recipes into sections,
 - **A color for every section**, picked from eight when you create or edit it. Each recipe page, its cook mode, and the sidebar beside it take on its section's color; the home page and Settings use Manna's own orange.
 - **Home page** with the recipes you opened most recently and the newest ones you added, so the ones you're cooking this week are a tap away. If you left cook mode partway through the last recipe you opened, it shows the step you were on, with a button to pick up where you left off.
 - **Recipes** with a description, servings, prep and cook times, a source link, ingredients, steps, and notes. The editor gives each ingredient and step its own row; press Enter for the next ingredient, and paste a whole list to split it into rows.
-- **Import from a link**: paste a recipe page's address on the New recipe page and Manna fills in the form for you to check before saving. It reads the recipe data most recipe sites publish for search engines (schema.org JSON-LD). Some big sites turn away requests that don't come from a browser; copy those recipes in by hand.
+- **Import from a link**: paste a recipe page's address on the New recipe page and Manna fills in the form for you to check before saving. It reads the recipe data most recipe sites publish for search engines (schema.org JSON-LD). Some big sites turn away requests that don't come from a browser, and some only add their recipe once the page's scripts run; connect [Firecrawl](#importing-through-firecrawl) to import those too, or copy them in by hand.
 - **Cook mode** shows every step over a gradient in the section's color, in a scrolling list with the current one centered, like song lyrics. Tap a step to jump to it, or use Previous/Next, the arrow keys, or space. Ingredients sit beside the steps on wide screens and in a drawer on phones. Each device remembers its place. Tap Keep awake, beside Previous, to keep the screen on while cooking; it shows when it's on, and tapping again lets the screen sleep. Browsers only allow this over HTTPS or on `localhost`, and Home Screen apps need iOS 18.4 or later.
 - **Light and dark themes**: follow the device, or pick one in Settings. Each device remembers its choice.
 - **Backups** from Settings: export the whole library as JSON, or restore a backup to replace everything (ids are kept, so links keep working). Backups from before sections had colors still restore; their sections take turns through the colors. Backups are limited to 16 MB, thousands of typical recipes; the app refuses a change that would make the library too big to restore.
@@ -31,6 +31,15 @@ On an iPhone or iPad, open the app in Safari and choose **Share → Add to Home 
 The app has no accounts, so keep it on a private network or behind a reverse proxy that handles authentication. Serve it over HTTPS if you want cook mode to keep the screen awake.
 
 Importing from a link makes the server fetch the page, so it needs outbound internet access. It only connects to public addresses: it refuses `localhost`, private networks, and link-local addresses such as cloud metadata services, including through redirects and DNS. That also means it can't import from another app on your own network.
+
+### Importing through Firecrawl
+
+Manna reads most recipe pages itself. For a page it can't, because the site turned it away, the connection dropped, or the recipe only appears once the page's scripts run, it can ask a [Firecrawl](https://github.com/firecrawl/firecrawl) API to load the page in a browser and then read the recipe from what the browser got. Set `FIRECRAWL_API_URL` to turn this on:
+
+- **[Firecrawl Local](https://github.com/firecrawl/firecrawl/tree/main/apps/local)** keeps everything on your own server. Run `firecrawl-local serve` with Chrome or Chromium installed and set `FIRECRAWL_API_URL=http://localhost:3002`. If it runs in another container, start it with `--host 0.0.0.0 --allowed-host <its hostname> --token <secret>`, and set `FIRECRAWL_API_KEY` to the same secret.
+- **Firecrawl Cloud** needs no setup on your server: set `FIRECRAWL_API_URL=https://api.firecrawl.dev` and `FIRECRAWL_API_KEY` to your API key. The addresses you import then go to Firecrawl.
+
+Firecrawl applies its own checks to the addresses it connects to; Firecrawl Local refuses private ones unless it's started with `--allow-private`. When Firecrawl can't get the recipe either, Manna shows the error from its own attempt.
 
 To use another port, change the host side of the mapping in `docker-compose.yml`, e.g. `"8080:4321"` serves the app on port 8080. To reach the app only through a reverse proxy on the same machine, bind it to loopback with `"127.0.0.1:4321:4321"`.
 
@@ -75,11 +84,13 @@ pnpm start
 
 ## Configuration
 
-| Variable   | Default     | Purpose                                         |
-| ---------- | ----------- | ----------------------------------------------- |
-| `DATA_DIR` | `./data`    | Folder holding the SQLite database              |
-| `PORT`     | `4321`      | Port the production server listens on           |
-| `HOST`     | `localhost` | Interface to bind; use `0.0.0.0` to expose it   |
+| Variable            | Default     | Purpose                                                                                             |
+| ------------------- | ----------- | --------------------------------------------------------------------------------------------------- |
+| `DATA_DIR`          | `./data`    | Folder holding the SQLite database                                                                  |
+| `PORT`              | `4321`      | Port the production server listens on                                                               |
+| `HOST`              | `localhost` | Interface to bind; use `0.0.0.0` to expose it                                                       |
+| `FIRECRAWL_API_URL` | none        | Firecrawl API to [import through](#importing-through-firecrawl) when Manna can't read a page itself |
+| `FIRECRAWL_API_KEY` | none        | Bearer token or API key for that Firecrawl API                                                      |
 
 ## Releasing
 
