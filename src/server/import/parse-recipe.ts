@@ -217,7 +217,7 @@ const namedEntities: Record<string, string> = {
 function decodeEntities(value: string): string {
   return value.replace(
     /&(?:#(\d+)|#x([\da-f]+)|([a-z][a-z\d]*));/gi,
-    (entity, decimal, hex, name) => {
+    (entity, decimal: string, hex: string, name: string) => {
       if (decimal || hex) {
         const code = decimal ? Number(decimal) : parseInt(hex, 16)
         return code > 0 && code <= 0x10ffff

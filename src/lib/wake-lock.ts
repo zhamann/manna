@@ -63,11 +63,12 @@ export function screenWakeLock(
     enabled = false
     const held = lock
     lock = undefined
-    held?.release()
+    void held?.release()
     if (held) onChange(false)
   }
 
-  doc.addEventListener("visibilitychange", request)
+  const onVisibilityChange = () => void request()
+  doc.addEventListener("visibilitychange", onVisibilityChange)
 
   return {
     enable() {
@@ -76,7 +77,7 @@ export function screenWakeLock(
     },
     disable,
     stop() {
-      doc.removeEventListener("visibilitychange", request)
+      doc.removeEventListener("visibilitychange", onVisibilityChange)
       disable()
     },
   }

@@ -67,8 +67,8 @@ describe("sections", () => {
         name: "Baking",
         color: "honey",
         recipes: [
-          { id: expect.any(Number), title: "Banana bread" },
-          { id: expect.any(Number), title: "scones" },
+          { id: expect.any(Number) as number, title: "Banana bread" },
+          { id: expect.any(Number) as number, title: "scones" },
         ],
       },
       { id: mains.id, name: "mains", color: "teal", recipes: [] },

@@ -1,5 +1,10 @@
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest"
-import { createServer, type IncomingMessage, type Server } from "node:http"
+import {
+  createServer,
+  type IncomingMessage,
+  type Server,
+  type ServerResponse,
+} from "node:http"
 import type { AddressInfo } from "node:net"
 
 import { importRecipe } from "."
@@ -47,15 +52,18 @@ beforeAll(async () => {
   })
   siteBase = await listen(site)
 
-  firecrawl = createServer(async (request, response) => {
+  async function respond(request: IncomingMessage, response: ServerResponse) {
     const chunks: Buffer[] = []
     for await (const chunk of request) chunks.push(chunk as Buffer)
-    const body = JSON.parse(Buffer.concat(chunks).toString())
+    const body = JSON.parse(Buffer.concat(chunks).toString()) as { url: string }
     requests.push({ headers: request.headers, body })
     const { status = 200, json } = reply(body)
     response.statusCode = status
     response.setHeader("content-type", "application/json")
     response.end(JSON.stringify(json))
+  }
+  firecrawl = createServer((request, response) => {
+    void respond(request, response)
   })
   firecrawlBase = await listen(firecrawl)
 })

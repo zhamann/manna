@@ -62,7 +62,7 @@ export function RecipeForm({
   function submit(event: React.SubmitEvent<HTMLFormElement>) {
     event.preventDefault()
     const form = new FormData(event.currentTarget)
-    const field = (name: string) => String(form.get(name) ?? "")
+    const field = (name: string) => (form.get(name) ?? "") as string
     const input = {
       sectionId: Number(form.get("sectionId")),
       title: field("title"),

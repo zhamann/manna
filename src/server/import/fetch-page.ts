@@ -186,7 +186,7 @@ async function readBody(response: IncomingMessage): Promise<Buffer> {
   const chunks: Buffer[] = []
   let size = 0
   try {
-    for await (const chunk of body) {
+    for await (const chunk of body as AsyncIterable<Buffer>) {
       size += chunk.length
       if (size > PAGE_SIZE_LIMIT) throw new ImportError("too-large")
       chunks.push(chunk)

@@ -10,8 +10,7 @@ minimumReleaseAge = 86400
 
 [lint]
 maxWarnings = 0
-# The type-aware rules come with the next change.
-typeAware = false
+typeAware = true
 # shadcn CLI output stays as generated.
 ignorePatterns = ["src/components/ui/", "src/hooks/use-mobile.ts"]
 
@@ -54,3 +53,8 @@ correctness = "error"
 # Vitest takes a message as a second argument, and infers a mock's type.
 "vitest/require-mock-type-parameters" = "off"
 "vitest/valid-expect" = ["error", { maxArgs = 2 }]
+
+[[lint.overrides]]
+files = ["*.test.ts"]
+# Stubs are async because what they stand in for is.
+rules = { "@typescript-eslint/require-await" = "off" }
