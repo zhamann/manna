@@ -5,5 +5,5 @@
 .vscode
 data
 dist
-node_modules
+**/node_modules
 *.md
