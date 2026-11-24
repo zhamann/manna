@@ -12,12 +12,12 @@ Manna is a simple, fast, self-hosted recipe app. Recipes live in sections shown 
 
 - `bun run dev`: start the dev server.
 - `bun run build` / `bun run start`: build and run the production server.
-- `bun run lint`, `bun run format:check`, `bun run typecheck`, `bun run test`: the checks CI runs. Keep the `run`: `bun test` and `bun build` are Bun's own commands, not these scripts.
+- `bun run lint`, `bun run format:check`, `bun run typecheck`, `bun run test`: the checks CI runs. `bun fmt` formats everything with the options in `.prettierrc`, running Prettier itself only for `.astro` files. Keep the `run` in the others: `bun test` and `bun build` are Bun's own commands, not these scripts.
 
 ## UI conventions
 
 - Build UI from shadcn components. Add them with `bunx shadcn@latest add <name>`.
-- Never edit files in `src/components/ui/` or `src/hooks/use-mobile.ts`; they must stay updatable through the CLI, so lint and Prettier skip them.
+- Never edit files in `src/components/ui/` or `src/hooks/use-mobile.ts`; they must stay updatable through the CLI, so lint and `bun fmt` skip them.
 - App components compose shadcn components. Their own classes are limited to layout, spacing, and text size; no hand-built controls, menus, dialogs, or one-off colors.
 - To style a link as a button, use `cn(buttonVariants({ ... }))`. `buttonVariants` alone doesn't resolve conflicting classes, so variants like `outline` lose their border.
 - Theme changes belong in `src/styles/global.css` as tokens.
