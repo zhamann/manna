@@ -1,5 +1,6 @@
 ---
 import "@/styles/global.css"
+import { Font } from "astro:assets"
 import { APP_HUE, type Hue } from "@/lib/hues"
 import { parseTheme, THEME_COOKIE } from "@/lib/theme"
 
@@ -25,6 +26,8 @@ const theme = cook ? "dark" : parseTheme(Astro.cookies.get(THEME_COOKIE)?.value)
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <Font cssVariable="--font-instrument-sans" preload />
+    <Font cssVariable="--font-instrument-sans-extended" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <meta name="apple-mobile-web-app-title" content="Manna" />
