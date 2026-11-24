@@ -66,11 +66,11 @@ The new container uses the same volume and applies any database migrations when 
 
 ## Development
 
-Requires Node 26 and pnpm.
+Requires Node 26 and Bun 1.4.
 
 ```bash
-pnpm install
-pnpm dev
+bun install
+bun run dev
 ```
 
 Open http://localhost:4321.
@@ -78,8 +78,8 @@ Open http://localhost:4321.
 To run a production build:
 
 ```bash
-pnpm build
-pnpm start
+bun run build
+bun run start
 ```
 
 ## Configuration
