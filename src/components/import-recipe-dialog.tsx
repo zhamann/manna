@@ -34,7 +34,7 @@ export function ImportRecipeDialog({
     // React bubbles events through portals, so without this the recipe form
     // this dialog sits in would submit too.
     event.stopPropagation()
-    const url = String(new FormData(event.currentTarget).get("url"))
+    const url = new FormData(event.currentTarget).get("url") as string
 
     startTransition(async () => {
       const { data, error } = await actions.importRecipe({ url })

@@ -12,6 +12,10 @@ class FakeSentinel extends EventTarget {
 }
 
 /** A browser that grants the lock only while `allowed` is true. */
+const visible: { visibilityState: DocumentVisibilityState } = {
+  visibilityState: "visible",
+}
+
 function fakeBrowser() {
   const sentinels: FakeSentinel[] = []
   const changes: boolean[] = []
@@ -31,9 +35,7 @@ function fakeBrowser() {
         }),
       },
     },
-    doc: Object.assign(new EventTarget(), {
-      visibilityState: "visible" as DocumentVisibilityState,
-    }),
+    doc: Object.assign(new EventTarget(), visible),
     fire: (event: string) => browser.doc.dispatchEvent(new Event(event)),
     lock: () => screenWakeLock(browser.onChange, browser.nav, browser.doc),
   }
@@ -46,7 +48,7 @@ describe("screenWakeLock", () => {
   it("takes the lock on enable when the browser allows it", async () => {
     const browser = fakeBrowser()
     const lock = browser.lock()
-    lock.enable()
+    void lock.enable()
     await settle()
     expect(browser.held()).toHaveLength(1)
     expect(browser.changes).toEqual([true])
@@ -76,7 +78,7 @@ describe("screenWakeLock", () => {
     await settle()
     expect(browser.nav.wakeLock.request).not.toHaveBeenCalled()
 
-    lock.enable()
+    void lock.enable()
     await settle()
     lock.disable()
     expect(browser.held()).toHaveLength(0)
@@ -105,7 +107,7 @@ describe("screenWakeLock", () => {
   it("takes the lock back after the system releases it", async () => {
     const browser = fakeBrowser()
     const lock = browser.lock()
-    lock.enable()
+    void lock.enable()
     await settle()
     await browser.sentinels[0].release()
     expect(browser.changes).toEqual([true, false])
@@ -121,7 +123,7 @@ describe("screenWakeLock", () => {
     const browser = fakeBrowser()
     browser.doc.visibilityState = "hidden"
     const lock = browser.lock()
-    lock.enable()
+    void lock.enable()
     browser.fire("visibilitychange")
     await settle()
     expect(browser.nav.wakeLock.request).not.toHaveBeenCalled()
@@ -131,7 +133,7 @@ describe("screenWakeLock", () => {
   it("releases a lock granted after it stopped", async () => {
     const browser = fakeBrowser()
     const lock = browser.lock()
-    lock.enable()
+    void lock.enable()
     lock.stop()
     await settle()
     expect(browser.sentinels).toHaveLength(1)
@@ -145,7 +147,7 @@ describe("screenWakeLock", () => {
     expect(canKeepScreenAwake(browser.nav)).toBe(true)
 
     const lock = screenWakeLock(browser.onChange, {}, browser.doc)
-    lock.enable()
+    void lock.enable()
     browser.fire("click")
     lock.stop()
     expect(browser.changes).toEqual([])

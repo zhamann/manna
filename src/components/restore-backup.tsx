@@ -35,7 +35,7 @@ export function RestoreBackup({
     setError(undefined)
     if (!file) return
     try {
-      setBackup(JSON.parse(await file.text()))
+      setBackup(JSON.parse(await file.text()) as Backup)
     } catch {
       setError("That file isn't valid JSON.")
     }
@@ -64,7 +64,7 @@ export function RestoreBackup({
         tabIndex={-1}
         aria-hidden
         onChange={(event) => {
-          pick(event.target.files?.[0])
+          void pick(event.target.files?.[0])
           event.target.value = ""
         }}
       />

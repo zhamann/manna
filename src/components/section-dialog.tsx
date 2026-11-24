@@ -50,7 +50,7 @@ export function SectionDialog({
 
   function submit(event: React.SubmitEvent<HTMLFormElement>) {
     event.preventDefault()
-    const name = String(new FormData(event.currentTarget).get("name"))
+    const name = new FormData(event.currentTarget).get("name") as string
 
     startTransition(async () => {
       const { error } = section

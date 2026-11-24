@@ -177,8 +177,8 @@ function fromRow(row: RecipeRow): StoredRecipe {
     prepTime: row.prep_time,
     cookTime: row.cook_time,
     sourceUrl: row.source_url,
-    ingredients: JSON.parse(row.ingredients),
-    steps: JSON.parse(row.steps),
+    ingredients: JSON.parse(row.ingredients) as Recipe["ingredients"],
+    steps: JSON.parse(row.steps) as Recipe["steps"],
     notes: row.notes,
   }
 }
