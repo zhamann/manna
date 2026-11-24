@@ -1,13 +1,12 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
-@import "@fontsource-variable/instrument-sans/wdth.css";
 
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-    --font-heading: 'Instrument Sans Variable', sans-serif;
-    --font-sans: 'Instrument Sans Variable', sans-serif;
+    --font-heading: var(--font-instrument-sans-extended), var(--font-instrument-sans);
+    --font-sans: var(--font-instrument-sans-extended), var(--font-instrument-sans);
     --color-canvas: var(--canvas);
     --color-swatch: var(--swatch);
     --color-sidebar-ring: var(--sidebar-ring);
