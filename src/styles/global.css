@@ -5,48 +5,50 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-    --font-heading: var(--font-instrument-sans-extended), var(--font-instrument-sans);
-    --font-sans: var(--font-instrument-sans-extended), var(--font-instrument-sans);
-    --color-canvas: var(--canvas);
-    --color-swatch: var(--swatch);
-    --color-sidebar-ring: var(--sidebar-ring);
-    --color-sidebar-border: var(--sidebar-border);
-    --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-    --color-sidebar-accent: var(--sidebar-accent);
-    --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-    --color-sidebar-primary: var(--sidebar-primary);
-    --color-sidebar-foreground: var(--sidebar-foreground);
-    --color-sidebar: var(--sidebar);
-    --color-chart-5: var(--chart-5);
-    --color-chart-4: var(--chart-4);
-    --color-chart-3: var(--chart-3);
-    --color-chart-2: var(--chart-2);
-    --color-chart-1: var(--chart-1);
-    --color-ring: var(--ring);
-    --color-input: var(--input);
-    --color-border: var(--border);
-    --color-destructive: var(--destructive);
-    --color-accent-foreground: var(--accent-foreground);
-    --color-accent: var(--accent);
-    --color-muted-foreground: var(--muted-foreground);
-    --color-muted: var(--muted);
-    --color-secondary-foreground: var(--secondary-foreground);
-    --color-secondary: var(--secondary);
-    --color-primary-foreground: var(--primary-foreground);
-    --color-primary: var(--primary);
-    --color-popover-foreground: var(--popover-foreground);
-    --color-popover: var(--popover);
-    --color-card-foreground: var(--card-foreground);
-    --color-card: var(--card);
-    --color-foreground: var(--foreground);
-    --color-background: var(--background);
-    --radius-sm: calc(var(--radius) * 0.6);
-    --radius-md: calc(var(--radius) * 0.8);
-    --radius-lg: var(--radius);
-    --radius-xl: calc(var(--radius) * 1.4);
-    --radius-2xl: calc(var(--radius) * 1.8);
-    --radius-3xl: calc(var(--radius) * 2.2);
-    --radius-4xl: calc(var(--radius) * 2.6);
+  --font-heading:
+    var(--font-instrument-sans-extended), var(--font-instrument-sans);
+  --font-sans:
+    var(--font-instrument-sans-extended), var(--font-instrument-sans);
+  --color-canvas: var(--canvas);
+  --color-swatch: var(--swatch);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --color-foreground: var(--foreground);
+  --color-background: var(--background);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
 }
 
 /*
@@ -54,67 +56,67 @@
  * (below), which take over the accent tokens wherever `data-hue` is set.
  */
 :root {
-    --background: #ffffff;
-    --foreground: #1c1b19;
-    --card: #ffffff;
-    --card-foreground: #1c1b19;
-    --popover: #ffffff;
-    --popover-foreground: #1c1b19;
-    --primary: #1c1b19;
-    --primary-foreground: #ffffff;
-    --secondary: #f4f2ee;
-    --secondary-foreground: #1c1b19;
-    --muted: #f4f2ee;
-    --muted-foreground: #716d64;
-    --accent: #f4f2ee;
-    --accent-foreground: #1c1b19;
-    --destructive: oklch(0.577 0.245 27.325);
-    --border: #e9e6e0;
-    --input: #e2dfd8;
-    --ring: #a8a397;
-    --chart-1: oklch(0.88 0.011 106.6);
-    --chart-2: oklch(0.58 0.031 107.3);
-    --chart-3: oklch(0.466 0.025 107.3);
-    --chart-4: oklch(0.394 0.023 107.4);
-    --chart-5: oklch(0.286 0.016 107.4);
-    --radius: 0.75rem;
-    --sidebar: #f4f2ee;
-    --sidebar-foreground: #1c1b19;
-    --sidebar-primary: #1c1b19;
-    --sidebar-primary-foreground: #ffffff;
-    --sidebar-accent: #ffffff;
-    --sidebar-accent-foreground: #1c1b19;
-    --sidebar-border: #e2dfd8;
-    --sidebar-ring: #a8a397;
+  --background: #ffffff;
+  --foreground: #1c1b19;
+  --card: #ffffff;
+  --card-foreground: #1c1b19;
+  --popover: #ffffff;
+  --popover-foreground: #1c1b19;
+  --primary: #1c1b19;
+  --primary-foreground: #ffffff;
+  --secondary: #f4f2ee;
+  --secondary-foreground: #1c1b19;
+  --muted: #f4f2ee;
+  --muted-foreground: #716d64;
+  --accent: #f4f2ee;
+  --accent-foreground: #1c1b19;
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: #e9e6e0;
+  --input: #e2dfd8;
+  --ring: #a8a397;
+  --chart-1: oklch(0.88 0.011 106.6);
+  --chart-2: oklch(0.58 0.031 107.3);
+  --chart-3: oklch(0.466 0.025 107.3);
+  --chart-4: oklch(0.394 0.023 107.4);
+  --chart-5: oklch(0.286 0.016 107.4);
+  --radius: 0.75rem;
+  --sidebar: #f4f2ee;
+  --sidebar-foreground: #1c1b19;
+  --sidebar-primary: #1c1b19;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #ffffff;
+  --sidebar-accent-foreground: #1c1b19;
+  --sidebar-border: #e2dfd8;
+  --sidebar-ring: #a8a397;
 }
 
 .dark {
-    --background: #1f1d1b;
-    --foreground: #f4f1ec;
-    --card: #282623;
-    --card-foreground: #f4f1ec;
-    --popover: #282623;
-    --popover-foreground: #f4f1ec;
-    --primary: #f4f1ec;
-    --primary-foreground: #1c1b19;
-    --secondary: #302d2a;
-    --secondary-foreground: #f4f1ec;
-    --muted: #2e2b28;
-    --muted-foreground: #a8a299;
-    --accent: #302d2a;
-    --accent-foreground: #f4f1ec;
-    --destructive: oklch(0.704 0.191 22.216);
-    --border: rgb(255 255 255 / 10%);
-    --input: rgb(255 255 255 / 14%);
-    --ring: rgb(255 255 255 / 40%);
-    --sidebar: #161513;
-    --sidebar-foreground: #f4f1ec;
-    --sidebar-primary: #f4f1ec;
-    --sidebar-primary-foreground: #1c1b19;
-    --sidebar-accent: rgb(255 255 255 / 10%);
-    --sidebar-accent-foreground: #f4f1ec;
-    --sidebar-border: rgb(255 255 255 / 10%);
-    --sidebar-ring: rgb(255 255 255 / 40%);
+  --background: #1f1d1b;
+  --foreground: #f4f1ec;
+  --card: #282623;
+  --card-foreground: #f4f1ec;
+  --popover: #282623;
+  --popover-foreground: #f4f1ec;
+  --primary: #f4f1ec;
+  --primary-foreground: #1c1b19;
+  --secondary: #302d2a;
+  --secondary-foreground: #f4f1ec;
+  --muted: #2e2b28;
+  --muted-foreground: #a8a299;
+  --accent: #302d2a;
+  --accent-foreground: #f4f1ec;
+  --destructive: oklch(0.704 0.191 22.216);
+  --border: rgb(255 255 255 / 10%);
+  --input: rgb(255 255 255 / 14%);
+  --ring: rgb(255 255 255 / 40%);
+  --sidebar: #161513;
+  --sidebar-foreground: #f4f1ec;
+  --sidebar-primary: #f4f1ec;
+  --sidebar-primary-foreground: #1c1b19;
+  --sidebar-accent: rgb(255 255 255 / 10%);
+  --sidebar-accent-foreground: #f4f1ec;
+  --sidebar-border: rgb(255 255 255 / 10%);
+  --sidebar-ring: rgb(255 255 255 / 40%);
 }
 
 /*
@@ -129,117 +131,205 @@
  *   smoke, flare             the sidebar in dark mode
  */
 [data-hue="orange"] {
-    --hue-canvas: #ffcf9e; --hue-glow: #ffebd0; --hue-mid: #ffc083; --hue-warm: #ffa579;
-    --hue-wash: #ffe9d0; --hue-tint: #ffd9b0; --hue-vivid: #ee8a36; --hue-deep: #56300c;
-    --hue-dusk: #54300f; --hue-ember: #91591c; --hue-night: #331808; --hue-smoke: #703a13; --hue-flare: #a67428;
+  --hue-canvas: #ffcf9e;
+  --hue-glow: #ffebd0;
+  --hue-mid: #ffc083;
+  --hue-warm: #ffa579;
+  --hue-wash: #ffe9d0;
+  --hue-tint: #ffd9b0;
+  --hue-vivid: #ee8a36;
+  --hue-deep: #56300c;
+  --hue-dusk: #54300f;
+  --hue-ember: #91591c;
+  --hue-night: #331808;
+  --hue-smoke: #703a13;
+  --hue-flare: #a67428;
 }
 [data-hue="honey"] {
-    --hue-canvas: #ffe089; --hue-glow: #fff4cc; --hue-mid: #ffd27f; --hue-warm: #ffb79b;
-    --hue-wash: #fff3c4; --hue-tint: #ffe9a3; --hue-vivid: #e0a614; --hue-deep: #4a3606;
-    --hue-dusk: #4b3309; --hue-ember: #8a651b; --hue-night: #2d1e06; --hue-smoke: #6c4611; --hue-flare: #a27e2c;
+  --hue-canvas: #ffe089;
+  --hue-glow: #fff4cc;
+  --hue-mid: #ffd27f;
+  --hue-warm: #ffb79b;
+  --hue-wash: #fff3c4;
+  --hue-tint: #ffe9a3;
+  --hue-vivid: #e0a614;
+  --hue-deep: #4a3606;
+  --hue-dusk: #4b3309;
+  --hue-ember: #8a651b;
+  --hue-night: #2d1e06;
+  --hue-smoke: #6c4611;
+  --hue-flare: #a27e2c;
 }
 [data-hue="tomato"] {
-    --hue-canvas: #ffbfaf; --hue-glow: #ffded3; --hue-mid: #ffab98; --hue-warm: #ff977d;
-    --hue-wash: #ffe1d8; --hue-tint: #ffcec1; --hue-vivid: #e5603f; --hue-deep: #5e1c10;
-    --hue-dusk: #4f1a13; --hue-ember: #8c3a2a; --hue-night: #2f0d0a; --hue-smoke: #6c251b; --hue-flare: #a25a3a;
+  --hue-canvas: #ffbfaf;
+  --hue-glow: #ffded3;
+  --hue-mid: #ffab98;
+  --hue-warm: #ff977d;
+  --hue-wash: #ffe1d8;
+  --hue-tint: #ffcec1;
+  --hue-vivid: #e5603f;
+  --hue-deep: #5e1c10;
+  --hue-dusk: #4f1a13;
+  --hue-ember: #8c3a2a;
+  --hue-night: #2f0d0a;
+  --hue-smoke: #6c251b;
+  --hue-flare: #a25a3a;
 }
 [data-hue="rose"] {
-    --hue-canvas: #ffc6d8; --hue-glow: #ffe3ec; --hue-mid: #ffafc8; --hue-warm: #f6a6cf;
-    --hue-wash: #ffe4ec; --hue-tint: #ffd3e0; --hue-vivid: #df5a86; --hue-deep: #5e1530;
-    --hue-dusk: #4f1528; --hue-ember: #8c3150; --hue-night: #2f0b18; --hue-smoke: #6c2140; --hue-flare: #a2506e;
+  --hue-canvas: #ffc6d8;
+  --hue-glow: #ffe3ec;
+  --hue-mid: #ffafc8;
+  --hue-warm: #f6a6cf;
+  --hue-wash: #ffe4ec;
+  --hue-tint: #ffd3e0;
+  --hue-vivid: #df5a86;
+  --hue-deep: #5e1530;
+  --hue-dusk: #4f1528;
+  --hue-ember: #8c3150;
+  --hue-night: #2f0b18;
+  --hue-smoke: #6c2140;
+  --hue-flare: #a2506e;
 }
 [data-hue="violet"] {
-    --hue-canvas: #d7ccff; --hue-glow: #ece6ff; --hue-mid: #c4b5ff; --hue-warm: #bba2f7;
-    --hue-wash: #ece7ff; --hue-tint: #e0d7ff; --hue-vivid: #856be6; --hue-deep: #2d1b70;
-    --hue-dusk: #251b4f; --hue-ember: #44378a; --hue-night: #150f30; --hue-smoke: #342870; --hue-flare: #7052a4;
+  --hue-canvas: #d7ccff;
+  --hue-glow: #ece6ff;
+  --hue-mid: #c4b5ff;
+  --hue-warm: #bba2f7;
+  --hue-wash: #ece7ff;
+  --hue-tint: #e0d7ff;
+  --hue-vivid: #856be6;
+  --hue-deep: #2d1b70;
+  --hue-dusk: #251b4f;
+  --hue-ember: #44378a;
+  --hue-night: #150f30;
+  --hue-smoke: #342870;
+  --hue-flare: #7052a4;
 }
 [data-hue="blue"] {
-    --hue-canvas: #bdd8ff; --hue-glow: #deebff; --hue-mid: #a8cbff; --hue-warm: #a0b6f8;
-    --hue-wash: #e0ecff; --hue-tint: #cbe0ff; --hue-vivid: #4585e6; --hue-deep: #12336b;
-    --hue-dusk: #11294d; --hue-ember: #244c85; --hue-night: #091830; --hue-smoke: #1a3a68; --hue-flare: #3a6c9e;
+  --hue-canvas: #bdd8ff;
+  --hue-glow: #deebff;
+  --hue-mid: #a8cbff;
+  --hue-warm: #a0b6f8;
+  --hue-wash: #e0ecff;
+  --hue-tint: #cbe0ff;
+  --hue-vivid: #4585e6;
+  --hue-deep: #12336b;
+  --hue-dusk: #11294d;
+  --hue-ember: #244c85;
+  --hue-night: #091830;
+  --hue-smoke: #1a3a68;
+  --hue-flare: #3a6c9e;
 }
 [data-hue="teal"] {
-    --hue-canvas: #b0e4dd; --hue-glow: #dcf4f0; --hue-mid: #97d9d0; --hue-warm: #a2d2e4;
-    --hue-wash: #dcf3f0; --hue-tint: #c4ebe6; --hue-vivid: #2e9e92; --hue-deep: #0e3d38;
-    --hue-dusk: #0f3532; --hue-ember: #23615a; --hue-night: #08201e; --hue-smoke: #184a45; --hue-flare: #3f7f86;
+  --hue-canvas: #b0e4dd;
+  --hue-glow: #dcf4f0;
+  --hue-mid: #97d9d0;
+  --hue-warm: #a2d2e4;
+  --hue-wash: #dcf3f0;
+  --hue-tint: #c4ebe6;
+  --hue-vivid: #2e9e92;
+  --hue-deep: #0e3d38;
+  --hue-dusk: #0f3532;
+  --hue-ember: #23615a;
+  --hue-night: #08201e;
+  --hue-smoke: #184a45;
+  --hue-flare: #3f7f86;
 }
 [data-hue="green"] {
-    --hue-canvas: #b9e5bb; --hue-glow: #def4da; --hue-mid: #a0daa8; --hue-warm: #93d198;
-    --hue-wash: #ddf3dc; --hue-tint: #c8ebc9; --hue-vivid: #3fa468; --hue-deep: #143f23;
-    --hue-dusk: #14331f; --hue-ember: #2a5e3c; --hue-night: #0b1e13; --hue-smoke: #1c482c; --hue-flare: #557e40;
+  --hue-canvas: #b9e5bb;
+  --hue-glow: #def4da;
+  --hue-mid: #a0daa8;
+  --hue-warm: #93d198;
+  --hue-wash: #ddf3dc;
+  --hue-tint: #c8ebc9;
+  --hue-vivid: #3fa468;
+  --hue-deep: #143f23;
+  --hue-dusk: #14331f;
+  --hue-ember: #2a5e3c;
+  --hue-night: #0b1e13;
+  --hue-smoke: #1c482c;
+  --hue-flare: #557e40;
 }
 
 [data-hue] {
-    --canvas: var(--hue-canvas);
-    --canvas-glow: var(--hue-glow);
-    --canvas-mid: var(--hue-mid);
-    --canvas-warm: var(--hue-warm);
-    --swatch: var(--hue-vivid);
-    --primary: var(--hue-deep);
-    --primary-foreground: var(--hue-wash);
-    --secondary: var(--hue-wash);
-    --secondary-foreground: var(--hue-deep);
-    --accent: var(--hue-wash);
-    --accent-foreground: var(--hue-deep);
-    --ring: var(--hue-vivid);
-    --sidebar: var(--hue-canvas);
-    --sidebar-foreground: var(--hue-deep);
-    --sidebar-primary: var(--hue-deep);
-    --sidebar-primary-foreground: var(--hue-tint);
-    --sidebar-accent: rgb(255 255 255 / 70%);
-    --sidebar-accent-foreground: var(--hue-deep);
-    --sidebar-border: color-mix(in oklab, var(--hue-deep) 14%, transparent);
-    --sidebar-ring: var(--hue-vivid);
+  --canvas: var(--hue-canvas);
+  --canvas-glow: var(--hue-glow);
+  --canvas-mid: var(--hue-mid);
+  --canvas-warm: var(--hue-warm);
+  --swatch: var(--hue-vivid);
+  --primary: var(--hue-deep);
+  --primary-foreground: var(--hue-wash);
+  --secondary: var(--hue-wash);
+  --secondary-foreground: var(--hue-deep);
+  --accent: var(--hue-wash);
+  --accent-foreground: var(--hue-deep);
+  --ring: var(--hue-vivid);
+  --sidebar: var(--hue-canvas);
+  --sidebar-foreground: var(--hue-deep);
+  --sidebar-primary: var(--hue-deep);
+  --sidebar-primary-foreground: var(--hue-tint);
+  --sidebar-accent: rgb(255 255 255 / 70%);
+  --sidebar-accent-foreground: var(--hue-deep);
+  --sidebar-border: color-mix(in oklab, var(--hue-deep) 14%, transparent);
+  --sidebar-ring: var(--hue-vivid);
 }
 
 :is(.dark[data-hue], .dark [data-hue]) {
-    --canvas: var(--hue-night);
-    --canvas-glow: var(--hue-dusk);
-    --canvas-mid: color-mix(in oklab, var(--hue-smoke) 60%, var(--hue-night));
-    --canvas-warm: var(--hue-smoke);
-    --primary: var(--hue-tint);
-    --primary-foreground: var(--hue-deep);
-    --secondary: color-mix(in oklab, var(--hue-vivid) 18%, var(--card));
-    --secondary-foreground: var(--hue-tint);
-    --accent: color-mix(in oklab, var(--hue-vivid) 18%, var(--card));
-    --accent-foreground: var(--hue-tint);
-    --sidebar: var(--hue-night);
-    --sidebar-foreground: var(--hue-wash);
-    --sidebar-primary: var(--hue-tint);
-    --sidebar-primary-foreground: var(--hue-deep);
-    --sidebar-accent: rgb(255 255 255 / 12%);
-    --sidebar-accent-foreground: #ffffff;
-    --sidebar-border: rgb(255 255 255 / 12%);
+  --canvas: var(--hue-night);
+  --canvas-glow: var(--hue-dusk);
+  --canvas-mid: color-mix(in oklab, var(--hue-smoke) 60%, var(--hue-night));
+  --canvas-warm: var(--hue-smoke);
+  --primary: var(--hue-tint);
+  --primary-foreground: var(--hue-deep);
+  --secondary: color-mix(in oklab, var(--hue-vivid) 18%, var(--card));
+  --secondary-foreground: var(--hue-tint);
+  --accent: color-mix(in oklab, var(--hue-vivid) 18%, var(--card));
+  --accent-foreground: var(--hue-tint);
+  --sidebar: var(--hue-night);
+  --sidebar-foreground: var(--hue-wash);
+  --sidebar-primary: var(--hue-tint);
+  --sidebar-primary-foreground: var(--hue-deep);
+  --sidebar-accent: rgb(255 255 255 / 12%);
+  --sidebar-accent-foreground: #ffffff;
+  --sidebar-border: rgb(255 255 255 / 12%);
 }
 
 /* Cook mode: white text and frosted controls over the hue's dark gradient. */
 :root[data-cook] {
-    --background: var(--hue-night);
-    --foreground: #ffffff;
-    --card: var(--hue-night);
-    --card-foreground: #ffffff;
-    --popover: var(--hue-night);
-    --popover-foreground: #ffffff;
-    --primary: #ffffff;
-    --primary-foreground: #1c1b19;
-    --secondary: rgb(255 255 255 / 16%);
-    --secondary-foreground: #ffffff;
-    --muted: rgb(255 255 255 / 16%);
-    --muted-foreground: rgb(255 255 255 / 72%);
-    --accent: rgb(255 255 255 / 16%);
-    --accent-foreground: #ffffff;
-    --border: rgb(255 255 255 / 14%);
-    --input: rgb(255 255 255 / 18%);
-    --ring: rgb(255 255 255 / 60%);
+  --background: var(--hue-night);
+  --foreground: #ffffff;
+  --card: var(--hue-night);
+  --card-foreground: #ffffff;
+  --popover: var(--hue-night);
+  --popover-foreground: #ffffff;
+  --primary: #ffffff;
+  --primary-foreground: #1c1b19;
+  --secondary: rgb(255 255 255 / 16%);
+  --secondary-foreground: #ffffff;
+  --muted: rgb(255 255 255 / 16%);
+  --muted-foreground: rgb(255 255 255 / 72%);
+  --accent: rgb(255 255 255 / 16%);
+  --accent-foreground: #ffffff;
+  --border: rgb(255 255 255 / 14%);
+  --input: rgb(255 255 255 / 18%);
+  --ring: rgb(255 255 255 / 60%);
 }
 
 /* The hue's soft gradient, behind the sidebar. */
 @utility surface-canvas {
-    background-color: var(--canvas);
-    background-image:
-        radial-gradient(30rem 28rem at 0 0, var(--canvas-glow), transparent 72%),
-        radial-gradient(38rem 34rem at 2rem 100%, var(--canvas-warm), transparent 72%),
-        radial-gradient(26rem 30rem at 20rem 46%, var(--canvas-mid), transparent 70%);
+  background-color: var(--canvas);
+  background-image:
+    radial-gradient(30rem 28rem at 0 0, var(--canvas-glow), transparent 72%),
+    radial-gradient(
+      38rem 34rem at 2rem 100%,
+      var(--canvas-warm),
+      transparent 72%
+    ),
+    radial-gradient(
+      26rem 30rem at 20rem 46%,
+      var(--canvas-mid),
+      transparent 70%
+    );
 }
 
 /*
@@ -248,12 +338,20 @@
  * toolbar's one color, so the gradient can't reach the top of the screen.
  */
 @utility surface-hero {
-    background-color: var(--canvas);
-    background-image:
-        linear-gradient(var(--canvas), transparent 6rem),
-        radial-gradient(30rem 28rem at 0 0, var(--canvas-glow), transparent 72%),
-        radial-gradient(38rem 34rem at 2rem 100%, var(--canvas-warm), transparent 72%),
-        radial-gradient(26rem 30rem at 20rem 46%, var(--canvas-mid), transparent 70%);
+  background-color: var(--canvas);
+  background-image:
+    linear-gradient(var(--canvas), transparent 6rem),
+    radial-gradient(30rem 28rem at 0 0, var(--canvas-glow), transparent 72%),
+    radial-gradient(
+      38rem 34rem at 2rem 100%,
+      var(--canvas-warm),
+      transparent 72%
+    ),
+    radial-gradient(
+      26rem 30rem at 20rem 46%,
+      var(--canvas-mid),
+      transparent 70%
+    );
 }
 
 /*
@@ -261,22 +359,22 @@
  * of the header, which iOS carries up into the status bar.
  */
 @utility surface-cook {
-    background-color: var(--hue-dusk);
-    background-image:
-        linear-gradient(var(--hue-night) 5rem, transparent 12rem),
-        radial-gradient(62% 85% at 12% 18%, var(--hue-ember), transparent 70%),
-        radial-gradient(55% 75% at 88% 12%, var(--hue-night), transparent 70%),
-        radial-gradient(70% 85% at 72% 95%, var(--hue-smoke), transparent 70%),
-        radial-gradient(50% 65% at 18% 98%, var(--hue-flare), transparent 70%);
+  background-color: var(--hue-dusk);
+  background-image:
+    linear-gradient(var(--hue-night) 5rem, transparent 12rem),
+    radial-gradient(62% 85% at 12% 18%, var(--hue-ember), transparent 70%),
+    radial-gradient(55% 75% at 88% 12%, var(--hue-night), transparent 70%),
+    radial-gradient(70% 85% at 72% 95%, var(--hue-smoke), transparent 70%),
+    radial-gradient(50% 65% at 18% 98%, var(--hue-flare), transparent 70%);
 }
 
 /* Big, tight display type: page titles, recipe titles and cook-mode steps. */
 @utility type-display {
-    font-family: var(--font-heading);
-    font-weight: 600;
-    font-stretch: 92%;
-    letter-spacing: -0.035em;
-    word-spacing: 0.06em;
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-stretch: 92%;
+  letter-spacing: -0.035em;
+  word-spacing: 0.06em;
 }
 
 /*
@@ -285,24 +383,24 @@
  */
 [data-slot="sidebar-inner"],
 [data-slot="sidebar"][data-mobile="true"] {
-    @apply surface-canvas bg-fixed;
+  @apply surface-canvas bg-fixed;
 }
 
 /* The phone sidebar takes focus itself when it opens; it needs no ring. */
 [data-slot="sidebar"][data-mobile="true"] {
-    @apply outline-hidden;
+  @apply outline-hidden;
 }
 
 @layer base {
   * {
     @apply border-border outline-ring/50;
-    }
+  }
   /* Canvas, not white: iOS shows it in the status bar wherever no bar is
      pinned at the top, such as over the open sidebar. */
   body {
     @apply bg-canvas text-foreground;
-    }
+  }
   html {
     @apply font-sans;
-    }
+  }
 }
