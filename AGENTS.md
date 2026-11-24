@@ -12,7 +12,7 @@ Manna is a simple, fast, self-hosted recipe app. Recipes live in sections shown 
 
 - `bun run dev`: start the dev server.
 - `bun run build` / `bun run start`: build and run the production server.
-- `bun run lint`, `bun run format:check`, `bun run typecheck`, `bun run test`: the checks CI runs. `bun fmt` formats everything with the options in `.prettierrc`, running Prettier itself only for `.astro` files. Keep the `run` in the others: `bun test` and `bun build` are Bun's own commands, not these scripts.
+- `bun run lint`, `bun run format:check`, `bun run typecheck`, `bun run test`: the checks CI runs. `bun fmt` formats everything with the options in `.prettierrc`, running Prettier itself only for `.astro` files. The linter is Bun's, from the canary pinned in `tools/lint`, because stable Bun doesn't ship it yet. Keep the `run` in the others: `bun test` and `bun build` are Bun's own commands, not these scripts.
 
 ## UI conventions
 

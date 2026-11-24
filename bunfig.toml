@@ -7,3 +7,50 @@ env = false
 linker = "isolated"
 # Only install versions published at least 24 hours ago (in seconds).
 minimumReleaseAge = 86400
+
+[lint]
+maxWarnings = 0
+# The type-aware rules come with the next change.
+typeAware = false
+# shadcn CLI output stays as generated.
+ignorePatterns = ["src/components/ui/", "src/hooks/use-mobile.ts"]
+
+[lint.categories]
+correctness = "error"
+
+# On top of Bun's default rules.
+[lint.rules]
+"@typescript-eslint/no-require-imports" = "error"
+
+# The React Compiler's rules.
+"react-hooks/config" = "error"
+"react-hooks/error-boundaries" = "error"
+"react-hooks/gating" = "error"
+"react-hooks/globals" = "error"
+"react-hooks/immutability" = "error"
+"react-hooks/incompatible-library" = "error"
+"react-hooks/preserve-manual-memoization" = "error"
+"react-hooks/purity" = "error"
+"react-hooks/refs" = "error"
+"react-hooks/set-state-in-effect" = "error"
+"react-hooks/set-state-in-render" = "error"
+"react-hooks/static-components" = "error"
+"react-hooks/unsupported-syntax" = "error"
+"react-hooks/use-memo" = "error"
+
+# Where Bun's defaults allow more than ESLint's, keep ESLint's.
+"@typescript-eslint/no-unused-expressions" = ["error", { allowShortCircuit = false, allowTernary = false }]
+"@typescript-eslint/no-unused-vars" = ["error", { argsIgnorePattern = "(?!)", varsIgnorePattern = "(?!)", caughtErrorsIgnorePattern = "(?!)", destructuredArrayIgnorePattern = "(?!)", ignoreRestSiblings = false }]
+"no-constant-binary-expression" = ["error", { allowLiteralToggle = false }]
+"no-empty-pattern" = ["error", { allowObjectPatternsAsParameters = false }]
+"no-fallthrough" = ["error", { commentPattern = "(?i:falls?\\s?through)" }]
+"no-irregular-whitespace" = ["error", { skipComments = false, skipJSXText = false, skipRegExps = false, skipTemplates = false }]
+
+# Dialogs focus their field, and elements take their role or label from the
+# component that renders them, which these can't see.
+"jsx-a11y/control-has-associated-label" = "off"
+"jsx-a11y/no-autofocus" = "off"
+"jsx-a11y/prefer-tag-over-role" = "off"
+# Vitest takes a message as a second argument, and infers a mock's type.
+"vitest/require-mock-type-parameters" = "off"
+"vitest/valid-expect" = ["error", { maxArgs = 2 }]
