@@ -1,0 +1,11 @@
+version: 2
+updates:
+  # Bun packages are updated separately. Dependabot's older Bun drops every `libc` tag
+  # from bun.lock.
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      actions:
+        patterns: ["*"]
